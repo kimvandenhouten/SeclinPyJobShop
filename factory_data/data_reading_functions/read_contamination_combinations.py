@@ -30,6 +30,8 @@ def read_contamination_combinations(contamination_path: str, def_enzymes_path: s
     number_pairs = [(name_to_number[row], name_to_number[col]) for row, col in pairs]
     assert len(pairs) == 47
 
+    # TODO: translate number pairs to product ids in factory
+
     return number_pairs
 
 

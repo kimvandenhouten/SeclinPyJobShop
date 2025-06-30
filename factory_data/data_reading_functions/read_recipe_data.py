@@ -31,6 +31,8 @@ def read_recipes(fermentation_recipes_path: str, dsp_recipes_path: str):
     ferm_recipes["fermentation_prep"] = ferm_recipes['Fermentation__prep (hrs)'] + ferm_recipes['Maintenance__Before prep (hrs)']
     ferm_recipes["fermentation_post"] = ferm_recipes['Fermentation__post (hrs)'] + ferm_recipes['Maintenance__After post (hrs)']
     ferm_recipes["fermentation_time"] = ferm_recipes["Fermentation__process (hrs)"]
+
+    dsp_recipes = dsp_recipes[dsp_recipes['Stab__In V300'] != 'Yes']  # For now only consider without stab
     dsp_recipes["harvesting_time"] = dsp_recipes["Broth killing (hrs)"] + dsp_recipes["Harvest tanks__Broth preparation (hrs)"]
 
     dsp_recipes["UF_fractions"] = dsp_recipes['UF__UF fractions (#)']
@@ -49,14 +51,20 @@ def read_recipes(fermentation_recipes_path: str, dsp_recipes_path: str):
 
     # Save or display the merged DataFrame
     merged_df = merged_df.dropna()
-    merged_df['sku_ferm'] = merged_df["SKU EoF"].astype(str) + '_' + merged_df['SKU Interm1'].astype(str) + '_' + merged_df[
-        'Fermenter'].astype(str)  # Concatenating columns A and B
+    #merged_df['sku_ferm'] = merged_df["SKU EoF"].astype(str) + '_' + merged_df['SKU Interm1'].astype(str) + '_' + merged_df[
+       # 'Fermenter'].astype(str)  # Concatenating columns A and B
+    merged_df['sku_ferm'] = merged_df["SKU EoF"].astype(str) + '_' + merged_df['Fermenter'].astype(str)  # Concatenating columns A and B
+
+    # Drop duplicates based on sku_ferm, keeping the first occurrence
+    merged_df = merged_df.drop_duplicates(subset='sku_ferm', keep='first')
+
+    # TODO: find out how important these duplicates actually are
 
     return merged_df
 
 
 def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
-                                     harvesting_tanks: list[int], v300_tanks: list[int]):
+                                     harvesting_tanks: list[int], v300_tanks: list[int], flexible_fermenters: bool = True):
     """
     Creates a ProductData object from a preprocessed recipe data given a product ID and
 
@@ -68,6 +76,7 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
                                              step of this enzyme recipe.
         v300_tanks (list[tuple[int]]): Tuples of the id's of the v300 tanks that can be used for the stabilization step
                                        of this enzyme recipe.
+        flexible_fermenters (bool): Whether all fermenters can be used to do the fermentation step
 
     Returns:
           product (ProductData): A ProductData object.
@@ -100,11 +109,13 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
                          "UF": round(recipe["UF_time"]),
                          "STAB": recipe["stab_time"]}
 
+    # Get the resource modes for the harvesting tasks
     harvesting_translation = {1: "V01_1", 2: "V01_2", 3: "V01_3", 4: "V01_4", 5: "V01_5", 6: "V01_6"}
     harvesting_modes = []
     for j in harvesting_tanks:
         harvesting_modes.append([harvesting_translation[i] for i in j])
 
+    # Get the resource modes for the V300 tasks
     v300_translation = {1: "V300_1", 2: "V300_2", 3: "V300_3", 4: "V300_4", 5: "V300_5", 6: "V300_6",
                         7: "V300_7", 8: "V300_8", 9: "V300_9", 10: "V300_10", 11: "V300_11"
                         }
@@ -113,12 +124,20 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
     for j in v300_tanks:
         v300_modes.append([v300_translation[i] for i in j])
 
+
+    # Get the resource modes for the fermentation tasks
+    if flexible_fermenters:
+        fermenter_modes = ["V100", "V140", "V200", "V218", "V42"]
+    else:
+        # TODO: do this in a more descent way
+        fermenter_modes = [name.split('_')[1]]
+
+
     # TODO: get this from machine files?
-    machine_modes = {"fermentation_prep": ["Fermenter_1", "Fermenter_2", "Fermenter_3", "Fermenter_4", "Fermenter_5"],
-                    "fermentation_post": ["Fermenter_1", "Fermenter_2", "Fermenter_3", "Fermenter_4", "Fermenter_5"],
-                    "fermentation": ["Fermenter_1", "Fermenter_2", "Fermenter_3", "Fermenter_4", "Fermenter_5"],
-                    "fermenter_during_harvesting": ["Fermenter_1", "Fermenter_2", "Fermenter_3", "Fermenter_4",
-                                                    "Fermenter_5"],
+    machine_modes = {"fermentation_prep": fermenter_modes,
+                    "fermentation_post": fermenter_modes,
+                    "fermentation": fermenter_modes,
+                    "fermenter_during_harvesting": fermenter_modes,
                     "STAB": v300_modes,
                     "F+L": ["F+L_1", "F+L_2", "F+L_3", "F+L_4"],
                      "harvesting": harvesting_modes,

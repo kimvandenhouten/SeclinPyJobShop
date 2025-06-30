@@ -3,11 +3,11 @@ from src.entities.instance import Instance
 import json
 
 # Load from file
-for key in [10]:
-    file_name = f"factory_data/uprod_instances/instance_size_{key}.json"
+for instance_name in ["plan_july_2024"]:
 
+    filename = f"factory_data/uprod_instances/instance_{instance_name}.json"
     # Read the JSON string from the file
-    with open(file_name, "r") as file:
+    with open(filename, "r") as file:
         json_string = file.read()
 
     # Parse the JSON string to a Python dictionary
@@ -17,12 +17,13 @@ for key in [10]:
     instance = Instance.from_dict(data)
 
     # Create PyJobshop CP Model
-    print(f'open instance from file {file_name}')
+    print(f'open instance from file {instance_name}')
     model = CPModel(instance)
+
     #model.add_set_up_times()
     status = model.solve(solver='cpoptimizer',
-                         time_limit=3600*10,
+                         time_limit=10,
                          display=True,
                          print_result=True,
                          print_sol=False,
-                         output_file=f"plots/instance_size_{key}.png")
+                         output_file=f"plots/instance_{instance_name}.png")

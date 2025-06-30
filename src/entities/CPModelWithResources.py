@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
+import pyjobshop.Result
 from pyjobshop import Model
 import numpy as np
 from src.entities.temporalRelation import ConstraintType
 from src.entities.instance import Instance
 import pyjobshop
 
-class CPModel:
+
+class CPModelRenewableResources:
     """
     A class that creates a concrete PyJobShop model for based on a scheduling instance for the dsm-firmenich factory.
 
@@ -42,18 +44,10 @@ class CPModel:
         # Add all the machines to the model
 
         for i, name in enumerate(self.factory.resource_names):
-            if self.factory.capacity[i] == 1:
-                machine_name = f'{name}'
-                machine = self.model.add_machine(name=name)
-                self.machines_dict[machine_name] = machine
-                self.machines.append(machine)
-            else:
-                for j in range(self.factory.capacity[i]):
-                    machine_name = f'{name}_{j+1}'
-                    machine = self.model.add_machine(name=name)
-                    self.machines_dict[machine_name] = machine
-                    self.machines.append(machine)
-        print(self.machines_dict)
+            machine_name = f'{name}'
+            machine = self.model.add_renewable(name=name, capacity=self.factory.capacity[i])
+            self.machines_dict[machine_name] = machine
+            self.machines.append(machine)
 
     def add_jobs(self):
         """
@@ -83,10 +77,16 @@ class CPModel:
                 modes = task_data.resource_modes
                 duration = round(task_data.duration)
 
-                for machine_mode in modes:
-                    machine_mode = [self.machines_dict[machine] for machine in machine_mode] if isinstance(machine_mode, list) \
-                        else self.machines_dict[machine_mode]
-                    self.model.add_mode(task, machine_mode, duration)
+                # Filter for lists and get their lengths
+                max_len = max((len(item) for item in modes if isinstance(item, list)), default=1)
+
+                if isinstance(modes[0], list):
+                    machine_mode = modes[0][0].split('_')[0]
+                else:
+                    machine_mode = modes[0].split('_')[0]
+
+                machine = self.machines_dict[machine_mode]
+                self.model.add_mode(task, machine, duration, demands=max_len)
 
             # Add product constraints
             for temp_relation in job_data.temporal_relations:
@@ -108,33 +108,30 @@ class CPModel:
                 task1 = tasks_dict[task1_name]
                 task2 = tasks_dict[task_2_name]
                 self.model.add_identical_resources(task1, task2)
-
     def add_set_up_times(self):
+        # TODO: use the real combinations of products that have a contamination constraint, currently not in use
         fixed_set_up = self.factory.constants["fam_cleaning_contamination"]
         # Add set-up times for FAM fraction between each different products with a contamination constraint
         for j, job_1 in enumerate(self.jobs):
+            product_1 = job_1.name.split('_')[0]
             job_1_data = self.factory.products[job_1.name]
-            job_1_sku_eof = job_1_data.name.split('_')[0]
-            nr_fracs_job_1 = job_1_data.constants["UF_fractions"]
+            nr_fracs_job_1 = job_1_data.UF_fractions
 
             for k, job_2 in enumerate(self.jobs):
+                product_2 = job_2.name.split('_')[0]
                 job_2_data = self.factory.products[job_2.name]
-                job_2_sku_eof = job_2_data.name.split('_')[0]
-                nr_fracs_job_2 = job_2_data.constants["UF_fractions"]
-
-                if [job_1_sku_eof, job_2_sku_eof] in self.factory.pairs_contamination:
-                    # Compare types
+                nr_fracs_job_2 = job_2_data.UF_fractions
+                if (int(product_1), int(product_2)) in self.factory.pairs_contamination:
+                      # Compare types
                     for frac_1 in range(nr_fracs_job_1):
                         for frac_2 in range(nr_fracs_job_2):
                             task_j = self.job_tasks[j][f"FAM_frac_{frac_1}"]
                             task_k = self.job_tasks[k][f"FAM_frac_{frac_2}"]
-                            for machine_name in ["FAM_1", "FAM_2", "FAM_3", 'MF_1']:
-                                machine = self.machines_dict[machine_name]
+                            for machine in self.machines_dict["FAM"]:
                                 self.model.add_setup_time(machine, task_j, task_k, fixed_set_up)
-                                print(F'WE ADDED A SETUP TIME for {job_1_sku_eof}, {job_2_sku_eof} on {machine_name}')
 
     def solve(self, solver="cpoptimizer", display=False, time_limit=np.inf, plotting=True, print_result=True,
-              print_sol=True, output_file="plot_new_model.png"):
+              print_sol=True, location_gantt="plot_machines_model.png"):
         """
         Solves the PyJobShop model using the PyJobShop solve method.
 
@@ -150,7 +147,6 @@ class CPModel:
         Returns:
             result.status: The status of the PyJobShop CP solver upon termination.
         """
-
         result = self.model.solve(solver=solver, display=display, time_limit=time_limit)
         if print_result:
             print(result)
@@ -161,10 +157,19 @@ class CPModel:
 
         if plotting:
             if result.status.value == pyjobshop.SolveStatus.FEASIBLE or result.status.value == pyjobshop.SolveStatus.OPTIMAL:
-                from pyjobshop.plot import plot_machine_gantt
+                from pyjobshop.plot import plot_resource_usage, plot_task_gantt
 
-                plot_machine_gantt(result.best, self.model.data())
-                plt.savefig(output_file)
+                data = self.model.data()
+                fig, axes = plt.subplots(
+                    data.num_resources + 1,
+                    figsize=(12, 16),
+                    gridspec_kw={"height_ratios": [6] + [1] * data.num_resources},
+                )
+
+                plot_task_gantt(result.best, data, ax=axes[0])
+                plot_resource_usage(result.best, data, axes=axes[1:])
+
+                plt.savefig(location_gantt)
                 plt.close()
 
         return result

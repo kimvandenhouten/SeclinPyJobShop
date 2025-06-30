@@ -1,16 +1,7 @@
 import random
-from src import FactoryData
-from src.entities.instance import Instance
+from src.entities import FactoryData, Instance
 import json
 import pandas as pd
-
-from src.utils.logger import get_logger
-logger = get_logger(__name__)
-
-### SPECIFY SETTINGS FOR INSTANCE GENERATION ###
-NR_PRODUCTS = [1, 5, 10, 15, 20]
-SEED = 301
-NR_INSTANCES_PER_SIZE = 5
 
 ### FILEPATHS ###
 dir = 'factory_data/seclin_recipes'
@@ -29,7 +20,6 @@ from factory_data.data_reading_functions.process_tanks import get_modes_v300, ge
 enzymes_translation = pd.read_csv(def_enzymes_path)
 print(enzymes_translation)
 
-
 # TODO: read file paths from one local point
 pairs_contamination = read_contamination_combinations(contamination_path, def_enzymes_path)
 
@@ -43,8 +33,8 @@ constants = {"max_wait_harv": 1,
 
 # Make factory object
 factory = FactoryData(name="Seclin",
-                  resource_names=["Fermenter", "V01", "FAM", "MF", "F+L", "UF", "FAP1", "V300"],
-                  capacity=[5, 6, 3, 1, 4, 4, 5, 11],
+                  resource_names=["V100", "V140", "V200", "V218", "V42", "V01", "FAM", "MF", "F+L", "UF", "FAP1", "V300"],
+                  capacity=[1, 1, 1, 1, 1, 6, 3, 1, 4, 4, 5, 11],
                   constants=constants,
                   pairs_contamination=pairs_contamination)
 
@@ -54,7 +44,6 @@ recipes = recipes.set_index('sku_ferm').to_dict(orient='index')
 
 # Create products for instance
 product_keys = [key for key in recipes.keys()]
-print(f'All possible product keys are {product_keys}')
 
 # Obtain allowed machine modes harvesting
 allowed_modes_harvesting = get_modes_harvesting(recipes)
@@ -63,16 +52,18 @@ allowed_modes_harvesting = get_modes_harvesting(recipes)
 allowed_modes_v300 = get_modes_v300(recipes)
 
 id = 0
+
 for key in product_keys:
-    print(key)
     product = create_uprod_product_from_recipe(id=id,
                                                name=key,
                                                recipe=recipes[key],
                                                harvesting_tanks=allowed_modes_harvesting[key],
-                                               v300_tanks=allowed_modes_v300[key])
+                                               v300_tanks=allowed_modes_v300[key],
+                                               flexible_fermenters=False)
 
     factory.add_product(product)
     id += 1
+
 
 ### Construct an instance
 # Set objective weights
@@ -86,25 +77,29 @@ objective_weights = {
     "weight_max_lateness": 0,
 }
 
+# TODO: read fermentation plan
+name_plan = "plan_july_2024"
+fermentation_plan = pd.read_csv(f"factory_data/fermentation_plans/{name_plan}.csv", delimiter=";")
 
-random.seed(SEED)
-# Set instance data
-for nr_products in NR_PRODUCTS:
-    for instance_id in range(NR_INSTANCES_PER_SIZE):
+# TODO: make new column with SKU - fermenter combination
+fermentation_plan["key"] = fermentation_plan['SKU EoF'].astype(str) + '_' + fermentation_plan['Fermenter'].astype(str)
+selected_keys = fermentation_plan["key"].tolist()
 
-        product_ids = [random.choice(range(0, len(product_keys))) for i in range(nr_products)]
-        nr_products = len(product_ids)
-        due_dates = [random.randint(20, 80) for _ in range(nr_products)]  # random due dates
-        instance = Instance(product_ids, due_dates, objective_weights, factory)
+print(f'We are now creating an instance with {selected_keys}')
 
-        # Save to file
-        json_string = json.dumps(instance.to_dict(), indent=4)
+product_ids = [product_keys.index(key) for key in selected_keys]
+nr_products = len(product_ids)
+due_dates = [random.randint(20, 80) for _ in range(nr_products)]  # random due dates
+instance = Instance(product_ids, due_dates, objective_weights, factory)
 
-        # Specify the file name
-        file_name = f"factory_data/uprod_instances/instance_size_{nr_products}_{instance_id}.json"
+# Save to json file
+json_string = json.dumps(instance.to_dict(), indent=4)
 
-        # Write the JSON string to the file
-        #with open(file_name, "w") as file:
-            #file.write(json_string)
+# Specify the file name
+file_name = f"factory_data/uprod_instances/instance_{name_plan}.json"
 
-        logger.info(f"Data successfully written to {file_name}")
+# Write the JSON string to the file
+with open(file_name, "w") as file:
+    file.write(json_string)
+
+print(f"Data successfully written to {file_name}")

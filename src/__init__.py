@@ -1,2 +1,3 @@
-from src.entities import CPModel, FactoryData, ProductData, TaskData, temporalRelation, ConstraintType
+from src.entities import (CPModel, FactoryData, ProductData, TaskData, temporalRelation, ConstraintType,
+                          CPModelRenewableResources)
 

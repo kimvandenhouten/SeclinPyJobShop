@@ -1,6 +1,7 @@
 import random
 from src.entities import FactoryData, Instance, TemporalRelation, ConstraintType, CPModel
 import json
+import pandas as pd
 
 ### FILEPATHS ###
 dir = 'factory_data/seclin_recipes'
@@ -13,6 +14,11 @@ ferm_recipes = f"{dir}/Recipes fermentation.xlsx"
 from factory_data.data_reading_functions.read_contamination_combinations import read_contamination_combinations
 from factory_data.data_reading_functions.read_recipe_data import read_recipes, create_uprod_product_from_recipe
 from factory_data.data_reading_functions.process_tanks import get_modes_v300, get_modes_harvesting
+
+
+# Read enzymes
+enzymes_translation = pd.read_csv(def_enzymes_path)
+print(enzymes_translation)
 
 # TODO: read file paths from one local point
 pairs_contamination = read_contamination_combinations(contamination_path, def_enzymes_path)
@@ -46,12 +52,9 @@ allowed_modes_harvesting = get_modes_harvesting(recipes)
 allowed_modes_v300 = get_modes_v300(recipes)
 
 id = 0
-selected_key = '20322_23322_V140'
+
 print(product_keys)
 for key in product_keys:
-    if key == selected_key:
-        print(f'Allowed modes harvesting {allowed_modes_harvesting[key]}')
-        print(f'id is {id}')
     product = create_uprod_product_from_recipe(id=id,
                                                name=key,
                                                recipe=recipes[key],
@@ -75,21 +78,21 @@ objective_weights = {
 }
 
 # Set instance data
-for key in [selected_key]:
+selected_keys = ['20322_23322_V140']
 
-    product_ids = [product_keys.index(key)]
-    nr_products = len(product_ids)
-    due_dates = [random.randint(20, 80) for _ in range(nr_products)]  # random due dates
-    instance = Instance(product_ids, due_dates, objective_weights, factory)
+product_ids = [product_keys.index(key) for key in selected_keys]
+nr_products = len(product_ids)
+due_dates = [random.randint(20, 80) for _ in range(nr_products)]  # random due dates
+instance = Instance(product_ids, due_dates, objective_weights, factory)
 
-    # Save to json file
-    json_string = json.dumps(instance.to_dict(), indent=4)
+# Save to json file
+json_string = json.dumps(instance.to_dict(), indent=4)
 
-    # Specify the file name
-    file_name = f"factory_data/uprod_instances/instance_{selected_key}.json"
+# Specify the file name
+file_name = f"factory_data/uprod_instances/instance_{selected_keys}.json"
 
-    # Write the JSON string to the file
-    with open(file_name, "w") as file:
-        file.write(json_string)
+# Write the JSON string to the file
+with open(file_name, "w") as file:
+    file.write(json_string)
 
-    print(f"Data successfully written to {file_name}")
+print(f"Data successfully written to {file_name}")
