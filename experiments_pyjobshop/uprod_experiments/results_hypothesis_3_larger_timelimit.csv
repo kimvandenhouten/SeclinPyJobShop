@@ -1,0 +1,5 @@
+,solver,status,objective,runtime,setups,size,lb
+0,ortools,Time-limit,inf,60.031252,False,5,192.0
+1,ortools,Time-limit,inf,60.044251,True,5,192.0
+2,cpoptimizer,Feasible,330.0,60.04,False,5,192.0
+3,cpoptimizer,Feasible,330.0,60.13,True,5,192.0
