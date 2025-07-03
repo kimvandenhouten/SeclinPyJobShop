@@ -32,7 +32,11 @@ def read_recipes(fermentation_recipes_path: str, dsp_recipes_path: str):
     ferm_recipes["fermentation_post"] = ferm_recipes['Fermentation__post (hrs)'] + ferm_recipes['Maintenance__After post (hrs)']
     ferm_recipes["fermentation_time"] = ferm_recipes["Fermentation__process (hrs)"]
 
-    dsp_recipes = dsp_recipes[dsp_recipes['Stab__In V300'] != 'Yes']  # For now only consider without stab
+    #dsp_recipes = dsp_recipes[dsp_recipes['Stab__In V300'] != 'Yes']  # For now only consider without stab
+    # TODO: we can probably base this on the table with Intermediate 1
+    dsp_recipes['MF'] = dsp_recipes['Name'].str.contains('MF', na=False)
+    dsp_recipes['STAB'] = dsp_recipes['Stab__In V300'].str.contains('Yes', na=False)
+    # dsp_recipes = dsp_recipes[dsp_recipes['Stab__In V300'] != 'Yes']  # For now only consider without stab
     dsp_recipes["harvesting_time"] = dsp_recipes["Broth killing (hrs)"] + dsp_recipes["Harvest tanks__Broth preparation (hrs)"]
 
     dsp_recipes["UF_fractions"] = dsp_recipes['UF__UF fractions (#)']
@@ -47,16 +51,17 @@ def read_recipes(fermentation_recipes_path: str, dsp_recipes_path: str):
     # Drop duplicate columns created by the merge
     merged_df = merged_df[['SKU Interm1', 'SKU EoF', 'Fermenter', 'Batch weight (kg)', 'fermentation_prep', 'fermentation_time',
                            'fermentation_post', 'harvesting_time', 'FAM/MF_time', 'UF_time', 'stab_time',
-                           "UF_fractions", 'UF__Weight ccUF (kg)']]
+                           "UF_fractions", 'UF__Weight ccUF (kg)', 'MF', 'STAB']]
 
     # Save or display the merged DataFrame
-    merged_df = merged_df.dropna()
+    #merged_df = merged_df.dropna()
     #merged_df['sku_ferm'] = merged_df["SKU EoF"].astype(str) + '_' + merged_df['SKU Interm1'].astype(str) + '_' + merged_df[
        # 'Fermenter'].astype(str)  # Concatenating columns A and B
-    merged_df['sku_ferm'] = merged_df["SKU EoF"].astype(str) + '_' + merged_df['Fermenter'].astype(str)  # Concatenating columns A and B
+    merged_df['sku_ferm'] = (merged_df["SKU EoF"].astype(str) + '_' + merged_df['Fermenter'].astype(str) + '_'
+                             + merged_df['MF'].astype(str) + '_' + merged_df['STAB'].astype(str))  # Concatenating columns A and B
 
     # Drop duplicates based on sku_ferm, keeping the first occurrence
-    merged_df = merged_df.drop_duplicates(subset='sku_ferm', keep='first')
+    #merged_df = merged_df.drop_duplicates(subset='sku_ferm', keep='first')
 
     # TODO: find out how important these duplicates actually are
 
@@ -83,9 +88,14 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
     """
 
     # TODO: maybe it is better to have this as a class method ?
-
     # TODO: read this from an input table
-    MAX_WAIT_FAM = 1
+    print(f'Recipe {name} has {recipe}')
+    if recipe["MF"] == True:
+        MF = True
+    else:
+        MF = False
+
+    MAX_WAIT_FAM_MF = 1
     MAX_WAIT_STAB = 1
     MAX_WAIT_HARVEST = 1
     MAX_WAIT_UF = 1
@@ -97,7 +107,7 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
                   "fermentation_post",
                   "STAB",
                   "harvesting",
-                  "V01_during_FAM"
+                  "V01_buffer"
                   ]
 
     # Get the processing times from the recipe
@@ -105,7 +115,7 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
                         "fermentation_post": recipe["fermentation_post"],
                          "fermentation": recipe["fermentation_time"],
                          "harvesting": recipe["harvesting_time"],
-                         "FAM": round(recipe["FAM/MF_time"]),
+                         "FAM/MF": round(recipe["FAM/MF_time"]),
                          "UF": round(recipe["UF_time"]),
                          "STAB": recipe["stab_time"]}
 
@@ -124,11 +134,11 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
     for j in v300_tanks:
         v300_modes.append([v300_translation[i] for i in j])
 
-
     # Get the resource modes for the fermentation tasks
     if flexible_fermenters:
         fermenter_modes = ["V100", "V140", "V200", "V218", "V42"]
     else:
+        print(f'fermenters are not flexible ')
         # TODO: do this in a more descent way
         fermenter_modes = [name.split('_')[1]]
 
@@ -141,7 +151,7 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
                     "STAB": v300_modes,
                     "F+L": ["F+L_1", "F+L_2", "F+L_3", "F+L_4"],
                      "harvesting": harvesting_modes,
-                     "V01_during_FAM": harvesting_modes
+                     "V01_buffer": harvesting_modes
                      }
 
     # Get the task duration from the recipe data
@@ -150,13 +160,13 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
                           "fermentation": processing_times["fermentation"],
                           "harvesting": processing_times["harvesting"],
                           "fermenter_during_harvesting": processing_times["harvesting"],
-                          "FAM": processing_times["FAM"],
-                          "V01_during_FAM": processing_times["FAM"],
-                          "F+L": processing_times["FAM"],
+                          "FAM/MF": processing_times["FAM/MF"],
+                          "V01_buffer": processing_times["FAM/MF"],
+                          "F+L": processing_times["FAM/MF"],
                           "STAB": processing_times["STAB"]}
 
     # These constants are needed to model additional constraints
-    constants = {"UF_fractions": recipe["UF_fractions"], "FAM_duration": round(recipe["FAM/MF_time"]),
+    constants = {"UF_fractions": recipe["UF_fractions"], "FAM/MF_duration": round(recipe["FAM/MF_time"]),
                             "UF_duration": round(recipe["UF_time"]),}
 
     # Create product
@@ -164,7 +174,7 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
 
     id = 0
     for task_name in task_names:
-        if task_name == "V01_during_FAM":
+        if task_name == "V01_buffer":
             fixed_duration = False
         else:
             fixed_duration = True
@@ -197,13 +207,18 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
     # Handle the fractions for downstream processing
     nr_fracs = constants["UF_fractions"]
 
-    # For each UF fraction we make a FAM, FAP1, UF and F+L task that require machines
+    if MF:
+        FAM_MF_modes = ["MF"]
+    else:
+        FAM_MF_modes = ["FAM_1", "FAM_2", "FAM_3"]
+
+    # For each UF fraction we make a FAM/MF, FAP1, UF and F+L task that require machines
     for uf_frac in range(nr_fracs):
         # TODO: make consistency in task_durations and processing_times dict
-        dsp_tasks = [(f"FAM_frac_{uf_frac}", task_durations["FAM"], ["FAM_1", "FAM_2", "FAM_3"], True),
+        dsp_tasks = [(f"FAM/MF_frac_{uf_frac}", task_durations["FAM/MF"], FAM_MF_modes, True),
                      (f"FAP1_frac_{uf_frac}", processing_times["UF"], ["FAP1_1", "FAP1_2", "FAP1_3", "FAP1_4", "FAP1_5"], True),
                      (f"UF_frac_{uf_frac}", processing_times["UF"], ["UF_1", "UF_2", "UF_3", "UF_4"], True),
-                     (f"F+L_frac_{uf_frac}",  task_durations["FAM"], ["F+L_1", "F+L_2", "F+L_3", "F+L_4"], False)]
+                     (f"F+L_frac_{uf_frac}",  task_durations["FAM/MF"], ["F+L_1", "F+L_2", "F+L_3", "F+L_4"], False)]
 
         # Create task entities and add to product
         for (name, duration, resource_modes, fixed_duration) in dsp_tasks:
@@ -217,16 +232,16 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
             product.add_task(task)
             id += 1
 
-        start_before_start_extra = [(f"F+L_frac_{uf_frac}", f"FAM_frac_{uf_frac}", None),
-                                    (f"FAM_frac_{uf_frac}", f"F+L_frac_{uf_frac}", None),
+        start_before_start_extra = [(f"F+L_frac_{uf_frac}", f"FAM/MF_frac_{uf_frac}", None),
+                                    (f"FAM/MF_frac_{uf_frac}", f"F+L_frac_{uf_frac}", None),
                                     (f"FAP1_frac_{uf_frac}", f"UF_frac_{uf_frac}", None),
                                     (f"UF_frac_{uf_frac}", f"FAP1_frac_{uf_frac}", None),
-                                    (f"FAM_frac_{uf_frac}", f"UF_frac_{uf_frac}", int(0.9 * task_durations["FAM"]))
+                                    (f"FAM/MF_frac_{uf_frac}", f"UF_frac_{uf_frac}", int(0.9 * task_durations["FAM/MF"]))
                                     ]
 
-        start_before_end_extra = [(f"UF_frac_{uf_frac}", f"FAM_frac_{uf_frac}", -MAX_WAIT_UF)]
+        start_before_end_extra = [(f"UF_frac_{uf_frac}", f"FAM/MF_frac_{uf_frac}", -MAX_WAIT_UF)]
 
-        end_before_start_extra = [("harvesting", f"FAM_frac_{uf_frac}", None)
+        end_before_start_extra = [("harvesting", f"FAM/MF_frac_{uf_frac}", None)
                                   ]
 
         end_before_end_extra = [(f"FAP1_frac_{uf_frac}", f"UF_frac_{uf_frac}", None),
@@ -242,23 +257,23 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
 
         end_before_end_constraints += end_before_end_extra
 
-    # Buffer tanks during the FAM/ MF
-    # Harvesting tank is still occupied during the FAM operations
-    end_before_end_constraints += [(f"FAM_frac_{nr_fracs - 1}", "V01_during_FAM", None)]
+    # Buffer tanks during the FAM/MF/ MF
+    # Harvesting tank is still occupied during the FAM/MF operations
+    end_before_end_constraints += [(f"FAM/MF_frac_{nr_fracs - 1}", "V01_buffer", None)]
 
     # Fermenter tank in use during fermentation
-    start_before_start_constraints += [("V01_during_FAM", f"FAM_frac_0", None),
+    start_before_start_constraints += [("V01_buffer", f"FAM/MF_frac_0", None),
                            ("harvesting", "fermenter_during_harvesting", None),
                            ("fermenter_during_harvesting", "harvesting", None)]
 
     start_before_end_constraints += [("STAB", f"UF_frac_{uf_frac}", - MAX_WAIT_STAB),
-                                     (f"FAM_frac_0", "harvesting", - MAX_WAIT_FAM)]
+                                     (f"FAM/MF_frac_0", "harvesting", - MAX_WAIT_FAM_MF)]
 
     # V300 after last UF fraction
     end_before_start_constraints += [(f"UF_frac_{uf_frac}", "STAB", None)]
 
     # Add consecutive machines
-    identical_resources += [("V01_during_FAM", "harvesting")]
+    identical_resources += [("V01_buffer", "harvesting")]
 
     # Temporal constraints that only apply to the final one or first one
     # Ordering of the fractions

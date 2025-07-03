@@ -3,7 +3,7 @@ from src.entities.instance import Instance
 import json
 
 # Load from file
-for instance_name in ["plan_july_2024"]:
+for instance_name in ["plan_july_2024_FLEX=FALSE"]:
 
     filename = f"factory_data/uprod_instances/instance_{instance_name}.json"
     # Read the JSON string from the file
@@ -22,7 +22,7 @@ for instance_name in ["plan_july_2024"]:
 
     #model.add_set_up_times()
     status = model.solve(solver='cpoptimizer',
-                         time_limit=10,
+                         time_limit=None,
                          display=True,
                          print_result=True,
                          print_sol=False,
