@@ -2,6 +2,12 @@ import random
 from src.entities import FactoryData, Instance
 import json
 import pandas as pd
+import numpy as np
+
+### DATA PROCESSING FUNCTIONS
+from factory_data.data_reading_functions.read_recipe_data import read_recipes, create_uprod_product_from_recipe
+from factory_data.data_reading_functions.read_contamination_combinations import read_contamination_combinations
+from factory_data.data_reading_functions.process_tanks import get_modes_v300, get_modes_harvesting, get_modes_UF
 
 ### FILEPATHS ###
 dir = 'factory_data/seclin_recipes'
@@ -13,60 +19,57 @@ ferm_recipes = f"{dir}/Recipes fermentation.xlsx"
 ### SETTINGS ###
 for FLEXIBLE in [False]:
 
-    # Construct factory object for seclin
-    from factory_data.data_reading_functions.read_contamination_combinations import read_contamination_combinations
-    from factory_data.data_reading_functions.read_recipe_data import read_recipes, create_uprod_product_from_recipe
-    from factory_data.data_reading_functions.process_tanks import get_modes_v300, get_modes_harvesting
-
     # Read enzymes
     enzymes_translation = pd.read_csv(def_enzymes_path)
     print(enzymes_translation)
 
     # TODO: read file paths from one local point
-    pairs_contamination = read_contamination_combinations(contamination_path, def_enzymes_path)
 
     # Constants
     # TODO: read from file
-    constants = {"max_wait_harv": 1,
-                 "max_wait_fam": 1,
-                 "max_wait_uf": 1,
-                 "max_wait_stab": 1,
-                 "fam_cleaning_contamination": 3}
+    constants = {"max_wait_harv": 5,
+                 "max_wait_fam": 5,
+                 "max_wait_uf": 5,
+                 "max_wait_stab": 5,
+                 "cleaning_time_contamination": 12}
+
+    ### READ RECIPES FOR FERMENTATION AND DOWNSTREAM PROCESSING ###
+    recipes, translation_table = read_recipes(ferm_recipes, dsp_recipes)
+    translation_dict = translation_table.set_index('key').to_dict(orient='index')
+    recipes = recipes.set_index('key').to_dict(orient='index')
+
+    ### READ CONTAMINATION PAIRS FOR SEQUENCE-DEPENDENT SETUP TIMES ###
+    pairs_contamination = read_contamination_combinations(contamination_path, def_enzymes_path, translation_table)
+
+    ### MACHINE MODES BASED ON MACHINE PREFERENCES ###
+    # Obtain allowed machine modes harvesting
+    allowed_modes_harvesting = get_modes_harvesting(recipes, translation_table)
+    print(allowed_modes_harvesting)
+
+    # Obtain allowed machine modes UF
+    allowed_modes_UF = get_modes_UF(translation_table)
+
+    # Obtain allowed machine modes V300
+    allowed_modes_v300 = get_modes_v300(recipes, translation_table)
 
     # Make factory object
     factory = FactoryData(name="Seclin",
-                      resource_names=["V100", "V140", "V200", "V218", "V42", "V01", "FAM", "MF", "F+L", "UF", "FAP1", "V300"],
-                      capacity=[1, 1, 1, 1, 1, 6, 3, 1, 4, 4, 5, 11],
-                      constants=constants,
-                      pairs_contamination=pairs_contamination)
+                          resource_names=["V100", "V140", "V200", "V218", "V42", "V01", "FAM", "MF", "F+L", "UF",
+                                          "FAP1", "V300"],
+                          capacity=[1, 1, 1, 1, 1, 6, 3, 1, 4, 4, 5, 11],
+                          constants=constants,
+                          pairs_contamination=pairs_contamination)
 
-    # Read recipes and add to factory data
-    recipes = read_recipes(ferm_recipes, dsp_recipes)
-    recipes = recipes.set_index('sku_ferm').to_dict(orient='index')
-
-    # Create products for instance
-    product_keys = [key for key in recipes.keys()]
-    print(product_keys)
-
-    # Obtain allowed machine modes harvesting
-    allowed_modes_harvesting = get_modes_harvesting(recipes)
-
-    # Obtain allowed machine modes V300
-    allowed_modes_v300 = get_modes_v300(recipes)
-
-    id = 0
-
-    for key in product_keys:
-        product = create_uprod_product_from_recipe(id=id,
-                                                   name=key,
+    for key in recipes.keys():
+        product = create_uprod_product_from_recipe(key=key,
                                                    recipe=recipes[key],
+                                                   translation=translation_dict[key],
                                                    harvesting_tanks=allowed_modes_harvesting[key],
+                                                   UF_tanks=allowed_modes_UF[key],
                                                    v300_tanks=allowed_modes_v300[key],
                                                    flexible_fermenters=FLEXIBLE)
 
         factory.add_product(product)
-        id += 1
-
 
     ### Construct an instance
     # Set objective weights
@@ -80,43 +83,23 @@ for FLEXIBLE in [False]:
         "weight_max_lateness": 0,
     }
 
-    # TODO: read fermentation plan
-    name_plan = "plan_july_2024"
-    fermentation_plan = pd.read_csv(f"factory_data/fermentation_plans/{name_plan}.csv", delimiter=";")
-    fermentation_plan['MF'] = fermentation_plan['MF (%)'] == 100
-    fermentation_plan['STAB'] = fermentation_plan['Stab (%)'] == 100
+    # TODO: read fermentation plan and connect to recipe keys
+    name_plan = "CIN"
+    ferm_plan = pd.read_csv(f"factory_data/fermentation_plans/{name_plan}.csv", delimiter=";")
+    ferm_plan['MF'] = ferm_plan['MF (%)'].replace(100, 1)
+    ferm_plan['Stab'] = ferm_plan['MF (%)'].replace(100, 1)
 
-    # TODO: make new column with SKU - fermenter combination
-    fermentation_plan['key'] = (fermentation_plan["SKU EoF"].astype(str) + '_' + fermentation_plan['Fermenter'].astype(str) + '_'
-                                 + fermentation_plan['MF'].astype(str) + '_' + fermentation_plan['STAB'].astype(str))  # Concatenating columns A and B
-    selected_keys = fermentation_plan["key"].tolist()
+    print(f'length plan before merge {len(ferm_plan)}')
+    merged_plan = pd.merge(ferm_plan, translation_table, how='left', on=['SKU EoF', 'Fermenter', 'MF', 'Stab'])
+    print(f'length plan after merge {len(merged_plan)}')
 
-    print(f'We are now creating an instance with {selected_keys}')
+    merged_plan['key'] = merged_plan['key'].replace(['NaN', 'None', ''], np.nan)
+    product_ids = merged_plan['key'].dropna()
+    product_ids = product_ids.tolist()
 
-    product_ids = []
-
-    # TODO: this is now a repair mechanism that we just use because
-    for name in selected_keys:
-        if name in product_keys:
-            use_name = name
-        else:
-            print(f'Name {name} not in keys')
-            # Split by underscore and replace first 'True' with 'False'
-            parts = name.split('_')
-            for i, part in enumerate(parts):
-                if part == 'True':
-                    parts[i] = 'False'
-                    break  # Only change the first occurrence
-            fallback_name = '_'.join(parts)
-
-            # Try fallback
-            if fallback_name in product_keys:
-                use_name = fallback_name
-            else:
-                use_name = None
-        print(f'Using name {use_name}')
-        product_ids.append(product_keys.index(use_name))
+    print(f'We are now creating an instance with {product_ids}')
     print(product_ids)
+
     nr_products = len(product_ids)
     due_dates = [random.randint(20, 80) for _ in range(nr_products)]  # random due dates
     instance = Instance(product_ids, due_dates, objective_weights, factory)

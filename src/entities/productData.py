@@ -13,13 +13,13 @@ class ProductData:
        constants (dict[str,int]): A dict of constants relevant for the factory scheduling.
        temporal_relations (list[TemporalRelation]): The list of temporal relations between the different tasks.
     """
-    def __init__(self, id: int, name: str, tasks: list = None, constants: dict = None,
-                 temporal_relations: list[TemporalRelation] = None,
+    def __init__(self, key: int, tasks: list = None, constants: dict = None,
+                 translation: dict = None, temporal_relations: list[TemporalRelation] = None,
                  identical_resources: list = None) -> None:
-        self.id = id
-        self.name = name
+        self.key = key
         self.tasks = tasks if tasks is not None else []
         self.constants = constants
+        self.translation = translation
         self.temporal_relations = temporal_relations if temporal_relations is not None else []
         self.identical_resources = identical_resources if identical_resources is not None else [] # TODO: currently not in use?
 
@@ -37,10 +37,10 @@ class ProductData:
 
     def to_dict(self):
         return {
-            "id": self.id,
-            "name": self.name,
+            "key": self.key,
             "tasks": [t.to_dict() for t in self.tasks],
             "constants": self.constants,
+            "translation": self.translation,
             "temporal_relations": [tr.to_dict() for tr in self.temporal_relations],
             "identical_resources": self.identical_resources
         }
@@ -48,10 +48,10 @@ class ProductData:
     @classmethod
     def from_dict(cls, data):
         return cls(
-            id=data["id"],
-            name=data["name"],
+            key=data["key"],
             tasks=[TaskData.from_dict(t) for t in data["tasks"]],
             constants=data["constants"],
+            translation=data["translation"],
             temporal_relations=[TemporalRelation.from_dict(tr) for tr in data["temporal_relations"]],
             identical_resources=data["identical_resources"]
         )

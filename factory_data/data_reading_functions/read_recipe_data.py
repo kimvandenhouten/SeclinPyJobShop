@@ -21,12 +21,6 @@ def read_recipes(fermentation_recipes_path: str, dsp_recipes_path: str):
     ferm_recipes = pd.read_excel(fermentation_recipes_path)
     dsp_recipes = pd.read_excel(dsp_recipes_path)
 
-    # Ferm recipes filtering
-    ferm_recipes["V01 tanks (#)"] = (np.minimum(ferm_recipes["V01 group1 (kg)"], 1) +
-                                     np.minimum(ferm_recipes["V01 group2 (kg)"], 1) +
-                                     np.minimum(ferm_recipes["V01 group3 (kg)"], 1) +
-                                     np.minimum(ferm_recipes["V01 group4 (kg)"], 1))
-
     # Create new columns for processing times
     ferm_recipes["fermentation_prep"] = ferm_recipes['Fermentation__prep (hrs)'] + ferm_recipes['Maintenance__Before prep (hrs)']
     ferm_recipes["fermentation_post"] = ferm_recipes['Fermentation__post (hrs)'] + ferm_recipes['Maintenance__After post (hrs)']
@@ -34,9 +28,8 @@ def read_recipes(fermentation_recipes_path: str, dsp_recipes_path: str):
 
     #dsp_recipes = dsp_recipes[dsp_recipes['Stab__In V300'] != 'Yes']  # For now only consider without stab
     # TODO: we can probably base this on the table with Intermediate 1
-    dsp_recipes['MF'] = dsp_recipes['Name'].str.contains('MF', na=False)
-    dsp_recipes['STAB'] = dsp_recipes['Stab__In V300'].str.contains('Yes', na=False)
-    # dsp_recipes = dsp_recipes[dsp_recipes['Stab__In V300'] != 'Yes']  # For now only consider without stab
+    dsp_recipes['MF'] = dsp_recipes['Name'].str.contains('MF', na=False).astype(int)
+    dsp_recipes['Stab'] = dsp_recipes['Stab__In V300'].str.contains('Yes', na=False).astype(int)
     dsp_recipes["harvesting_time"] = dsp_recipes["Broth killing (hrs)"] + dsp_recipes["Harvest tanks__Broth preparation (hrs)"]
 
     dsp_recipes["UF_fractions"] = dsp_recipes['UF__UF fractions (#)']
@@ -51,25 +44,27 @@ def read_recipes(fermentation_recipes_path: str, dsp_recipes_path: str):
     # Drop duplicate columns created by the merge
     merged_df = merged_df[['SKU Interm1', 'SKU EoF', 'Fermenter', 'Batch weight (kg)', 'fermentation_prep', 'fermentation_time',
                            'fermentation_post', 'harvesting_time', 'FAM/MF_time', 'UF_time', 'stab_time',
-                           "UF_fractions", 'UF__Weight ccUF (kg)', 'MF', 'STAB']]
+                           "UF_fractions", 'UF__Weight ccUF (kg)', 'MF', 'Stab']]
 
-    # Save or display the merged DataFrame
-    #merged_df = merged_df.dropna()
-    #merged_df['sku_ferm'] = merged_df["SKU EoF"].astype(str) + '_' + merged_df['SKU Interm1'].astype(str) + '_' + merged_df[
-       # 'Fermenter'].astype(str)  # Concatenating columns A and B
-    merged_df['sku_ferm'] = (merged_df["SKU EoF"].astype(str) + '_' + merged_df['Fermenter'].astype(str) + '_'
-                             + merged_df['MF'].astype(str) + '_' + merged_df['STAB'].astype(str))  # Concatenating columns A and B
+    # Drop NAS
+    merged_df = merged_df.dropna()
 
-    # Drop duplicates based on sku_ferm, keeping the first occurrence
-    #merged_df = merged_df.drop_duplicates(subset='sku_ferm', keep='first')
+    # Add key to backtrack enzymes
+    # Or, if you want it to start from 1
+    merged_df['key'] = range(0, len(merged_df))
 
-    # TODO: find out how important these duplicates actually are
+    translation_table = merged_df[['key', 'Fermenter', 'SKU EoF', 'SKU Interm1', 'MF', 'Stab']]
 
-    return merged_df
+    return merged_df, translation_table
 
 
-def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
-                                     harvesting_tanks: list[int], v300_tanks: list[int], flexible_fermenters: bool = True):
+def create_uprod_product_from_recipe(key: int,
+                                     recipe: dict,
+                                     translation: dict,
+                                     harvesting_tanks: list[int],
+                                     v300_tanks: list[int],
+                                     UF_tanks: list[int],
+                                     flexible_fermenters: bool = True):
     """
     Creates a ProductData object from a preprocessed recipe data given a product ID and
 
@@ -89,7 +84,7 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
 
     # TODO: maybe it is better to have this as a class method ?
     # TODO: read this from an input table
-    print(f'Recipe {name} has {recipe}')
+    print(f'Recipe with key {key} has recipe {recipe} and belongs to {translation}')
     if recipe["MF"] == True:
         MF = True
     else:
@@ -140,7 +135,8 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
     else:
         print(f'fermenters are not flexible ')
         # TODO: do this in a more descent way
-        fermenter_modes = [name.split('_')[1]]
+        fermenter_modes = [recipe["Fermenter"]]
+        print(fermenter_modes)
 
 
     # TODO: get this from machine files?
@@ -167,10 +163,10 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
 
     # These constants are needed to model additional constraints
     constants = {"UF_fractions": recipe["UF_fractions"], "FAM/MF_duration": round(recipe["FAM/MF_time"]),
-                            "UF_duration": round(recipe["UF_time"]),}
+                            "UF_duration": round(recipe["UF_time"])}
 
     # Create product
-    product = ProductData(id=id, name=name, constants=constants)
+    product = ProductData(key=key, constants=constants, translation=translation)
 
     id = 0
     for task_name in task_names:
@@ -217,7 +213,7 @@ def create_uprod_product_from_recipe(id: int, name: str, recipe: dict,
         # TODO: make consistency in task_durations and processing_times dict
         dsp_tasks = [(f"FAM/MF_frac_{uf_frac}", task_durations["FAM/MF"], FAM_MF_modes, True),
                      (f"FAP1_frac_{uf_frac}", processing_times["UF"], ["FAP1_1", "FAP1_2", "FAP1_3", "FAP1_4", "FAP1_5"], True),
-                     (f"UF_frac_{uf_frac}", processing_times["UF"], ["UF_1", "UF_2", "UF_3", "UF_4"], True),
+                     (f"UF_frac_{uf_frac}", processing_times["UF"], [f"UF_{i}" for i in UF_tanks], True),
                      (f"F+L_frac_{uf_frac}",  task_durations["FAM/MF"], ["F+L_1", "F+L_2", "F+L_3", "F+L_4"], False)]
 
         # Create task entities and add to product

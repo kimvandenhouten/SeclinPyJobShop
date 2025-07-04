@@ -5,6 +5,7 @@ from src.entities.temporalRelation import ConstraintType
 from src.entities.instance import Instance
 import pyjobshop
 
+
 class CPModel:
     """
     A class that creates a concrete PyJobShop model for based on a scheduling instance for the dsm-firmenich factory.
@@ -53,7 +54,6 @@ class CPModel:
                     machine = self.model.add_machine(name=name)
                     self.machines_dict[machine_name] = machine
                     self.machines.append(machine)
-        print(self.machines_dict)
 
     def add_jobs(self):
         """
@@ -61,11 +61,11 @@ class CPModel:
         """
 
         # TODO: base the instance on the job keys
-        self.jobs = [self.model.add_job(due_date=self.instance.due_dates[i],
-                                        name=self.instance.product_ids[i]) for i in range(self.nr_products)]
+        self.jobs = [self.model.add_job(due_date=self.instance.due_dates[i], name=str(self.instance.product_ids[i])) for i in range(self.nr_products)]
 
         for j, job in enumerate(self.jobs):
-            job_data = self.factory.products[job.name]
+            print(f'We start with job {job.name}')
+            job_data = self.factory.products[int(job.name)]
             tasks = []
             tasks_dict = {}
 
@@ -81,6 +81,7 @@ class CPModel:
             for task_data in job_data.tasks:
                 task = tasks_dict[task_data.name]
                 modes = task_data.resource_modes
+                print(f'We now add task_data {task_data.name} with modes {task_data.resource_modes}')
                 duration = round(task_data.duration)
 
                 for machine_mode in modes:
@@ -110,28 +111,49 @@ class CPModel:
                 self.model.add_identical_resources(task1, task2)
 
     def add_set_up_times(self):
-        fixed_set_up = self.factory.constants["fam_cleaning_contamination"]
+        # First we add the setup times based on the cleaning for FAM/MF/UF
+        fixed_set_up = self.factory.constants["cleaning_time_contamination"]
         # Add set-up times for FAM fraction between each different products with a contamination constraint
         for j, job_1 in enumerate(self.jobs):
-            job_1_data = self.factory.products[job_1.name]
-            job_1_sku_eof = job_1_data.name.split('_')[0]
+            job_1_data = self.factory.products[int(job_1.name)]
             nr_fracs_job_1 = job_1_data.constants["UF_fractions"]
 
             for k, job_2 in enumerate(self.jobs):
-                job_2_data = self.factory.products[job_2.name]
-                job_2_sku_eof = job_2_data.name.split('_')[0]
+                job_2_data = self.factory.products[int(job_2.name)]
                 nr_fracs_job_2 = job_2_data.constants["UF_fractions"]
 
-                if [job_1_sku_eof, job_2_sku_eof] in self.factory.pairs_contamination:
+                if [job_1_data.key, job_2_data.key] in self.factory.pairs_contamination:
                     # Compare types
                     for frac_1 in range(nr_fracs_job_1):
                         for frac_2 in range(nr_fracs_job_2):
-                            task_j = self.job_tasks[j][f"FAM_frac_{frac_1}"]
-                            task_k = self.job_tasks[k][f"FAM_frac_{frac_2}"]
-                            for machine_name in ["FAM_1", "FAM_2", "FAM_3", 'MF_1']:
+                            task_j = self.job_tasks[j][f"FAM/MF_frac_{frac_1}"]
+                            task_k = self.job_tasks[k][f"FAM/MF_frac_{frac_2}"]
+                            for machine_name in ["FAM_1", "FAM_2", "FAM_3", 'MF']:
                                 machine = self.machines_dict[machine_name]
                                 self.model.add_setup_time(machine, task_j, task_k, fixed_set_up)
-                                print(F'WE ADDED A SETUP TIME for {job_1_sku_eof}, {job_2_sku_eof} on {machine_name}')
+                                print(F'WE ADDED A SETUP TIME for {job_1_data.key}, {job_2_data.key} on {machine_name}')
+                            task_l = self.job_tasks[j][f"UF_frac_{frac_1}"]
+                            task_m = self.job_tasks[k][f"UF_frac_{frac_2}"]
+                            for machine_name in ["UF_1", "UF_2", "UF_3", 'UF_4']:
+                                machine = self.machines_dict[machine_name]
+                                self.model.add_setup_time(machine, task_l, task_m, fixed_set_up)
+                                print(F'WE ADDED A SETUP TIME for {job_1_data.key}, {job_2_data.key} on {machine_name}')
+
+        # Then we add the setup times between all fermentation tasks that are executed at the same machine
+        spread_between_fermentation = 3
+        for j, job_1 in enumerate(self.jobs):
+            job_1_data = self.factory.products[int(job_1.name)]
+
+            for k, job_2 in enumerate(self.jobs):
+                job_2_data = self.factory.products[int(job_2.name)]
+
+                # Add this between post and pre
+                task_j = self.job_tasks[j][f"fermentation_post"]
+                task_k = self.job_tasks[k][f"fermentation_prep"]
+                for machine_name in ["V100", "V140", "V200", "V218", "V42"]:
+                    machine = self.machines_dict[machine_name]
+                    self.model.add_setup_time(machine, task_j, task_k, spread_between_fermentation)
+                    print(F'WE ADDED A SETUP TIME for {job_1_data.key}, {job_2_data.key} on {machine_name}')
 
     def solve(self, solver="cpoptimizer", display=False, time_limit=np.inf, plotting=True, print_result=True,
               print_sol=True, output_file="plot_new_model.png"):

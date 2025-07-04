@@ -21,7 +21,7 @@ def remove_rendundant_sets(sets):
     return result
 
 
-def get_modes_v300(recipes):
+def get_modes_v300(recipes, translation_table: pd.DataFrame):
     """
     This function takes the enzyme recipes and reads the data about the V300 preferences and the harvesting tank
     capacity and translates this in to possible sets of tanks that can do the V300 operation of a specific enzyme.
@@ -49,11 +49,14 @@ def get_modes_v300(recipes):
 
     # Merge side by side of preferences and skus
     preferences_per_sku = pd.concat([skus, preferences], axis=1)
+    preferences_per_key = translation_table.merge(preferences_per_sku, on=['SKU EoF'], how='left',
+                                                  suffixes=('y', ''))
+
     # TODO: automate this based on the number of V300 tanks
     preferences_dict = {
-        row["SKU EoF"]: [row["1"], row["2"], row["3"], row["4"], row["5"], row["6"], row["7"], row["8"], row["9"],
+        row["key"]: [row["1"], row["2"], row["3"], row["4"], row["5"], row["6"], row["7"], row["8"], row["9"],
                          row["10"], row["11"]]
-        for _, row in preferences_per_sku.iterrows()
+        for _, row in preferences_per_key.iterrows()
     }
 
     # Map out all possible combinations of machines
@@ -79,18 +82,17 @@ def get_modes_v300(recipes):
             total_capacity += capacity_dict[i]
         comb_weights[comb] = total_capacity
 
-    allowed_modes_harvesting = {}
+    allowed_modes = {}
     # Iterate through EOFs
-    for enz in recipes.keys():
+    for key in recipes.keys():
         # Obtain batch weight
-        batch_weight = recipes[enz]['UF__Weight ccUF (kg)']
+        batch_weight = recipes[key]['UF__Weight ccUF (kg)']
 
         # Filter only the combinations that have the capacity constraint satisfied
         allowed_combs = [k for k, v in comb_weights.items() if v >= batch_weight]
 
         # Obtain which tanks cannot be used for this EOF
-        sku = enz.split("_")[0]
-        allowed_tanks = preferences_dict[int(sku)]
+        allowed_tanks = preferences_dict[int(key)]
         not_allowed_tanks = [i + 1 for i, val in enumerate(allowed_tanks) if val == 0]
 
         # Filter these combinations out of the list of combinations
@@ -99,12 +101,12 @@ def get_modes_v300(recipes):
 
         # Remove redundant sets
         allowed_combs = remove_rendundant_sets(allowed_combs)
-        allowed_modes_harvesting[enz] = allowed_combs
+        allowed_modes[key] = allowed_combs
 
-    return allowed_modes_harvesting
+    return allowed_modes
 
 
-def get_modes_harvesting(recipes: dict) -> dict:
+def get_modes_harvesting(recipes: dict, translation_table: pd.DataFrame) -> dict:
     """
     This function takes the enzyme recipes and reads the data about the harvesting preferences and the harvesting tank
     capacity and translates this in to possible sets of tanks that can do the harvesting operation of a specific enzyme.
@@ -130,9 +132,13 @@ def get_modes_harvesting(recipes: dict) -> dict:
 
     # Merge side by side of preferences and skus
     preferences_per_sku = pd.concat([skus, preferences], axis=1)
+    preferences_per_key = translation_table.merge(preferences_per_sku, on=['SKU EoF'], how='left',
+                                                  suffixes=('y', ''))
+
+    # We return is as dict
     preferences_dict = {
-        row["SKU EoF"]: [row["1"], row["2"], row["3"], row["4"], row["5"], row["6"]]
-        for _, row in preferences_per_sku.iterrows()
+        int(row["key"]): [i + 1 for i in range(4) if row[str(i + 1)] == 1]
+        for _, row in preferences_per_key.iterrows()
     }
 
     # Map out all possible combinations of machines
@@ -161,16 +167,15 @@ def get_modes_harvesting(recipes: dict) -> dict:
 
     allowed_modes_harvesting = {}
     # Iterate through EOFs
-    for enz in recipes.keys():
+    for key in recipes.keys():
         # Obtain batch weight
-        batch_weight = recipes[enz]['Batch weight (kg)']
+        batch_weight = recipes[key]['Batch weight (kg)']
 
         # Filter only the combinations that have the capacity constraint satisfied
         allowed_combs = [k for k, v in comb_weights.items() if v >= batch_weight]
 
         # Obtain which tanks cannot be used for this EOF
-        sku = enz.split("_")[0]
-        allowed_tanks = preferences_dict[int(sku)]
+        allowed_tanks = preferences_dict[key]
         not_allowed_tanks = [i + 1 for i, val in enumerate(allowed_tanks) if val == 0]
 
         # Filter these combinations out of the list of combinations
@@ -179,7 +184,44 @@ def get_modes_harvesting(recipes: dict) -> dict:
 
         # Remove redundant sets
         allowed_combs = remove_rendundant_sets(allowed_combs)
-        allowed_modes_harvesting[enz] = allowed_combs
+        allowed_modes_harvesting[key] = allowed_combs
 
     return allowed_modes_harvesting
 
+
+def get_modes_UF(translation_table: pd.DataFrame) -> dict:
+    """
+    This function the data about the UF preferences and translates this in to the allowed modes for the UF task
+
+
+    Returns:
+        dict: A dictionary with per enzyme all possible sets of tanks that can do the harvesting operation.
+    """
+    # FILE LOCATION
+    dir = 'factory_data/seclin_recipes'
+
+    # Read in UF preferences
+    preferences = pd.read_csv(f'{dir}/file_D_UF preferences.csv')
+
+    # Read in SKU translation
+    skus = pd.read_csv(f'{dir}/file_D_Intermediate 1.csv')
+    print(skus)
+
+    # Merge side by side of preferences and skus
+    preferences_per_sku = pd.concat([skus, preferences], axis=1)
+
+    # Now we want to get the preferences per keye
+    preferences_per_key = translation_table.merge(preferences_per_sku, on=['SKU Interm1'], how='left', suffixes=('y', ''))
+
+    # We return is as dict
+    preferences_dict = {
+        int(row["key"]): [i+1 for i in range(4) if row[str(i+1)] == 1]
+        for _, row in preferences_per_key.iterrows()
+    }
+
+    return preferences_dict
+
+
+if __name__ == "__main__":
+    pref_dict = get_modes_UF()
+    print(pref_dict)

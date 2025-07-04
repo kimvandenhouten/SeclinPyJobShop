@@ -1,7 +1,8 @@
 import pandas as pd
+import itertools
 
 
-def read_contamination_combinations(contamination_path: str, def_enzymes_path: str):
+def read_contamination_combinations(contamination_path: str, def_enzymes_path: str, translation_table: pd.DataFrame):
     """
     TODO: can we replace this function by taking it from the original table provided by SN
     TODO: standardized way for using keys / ids / SKU EoFs and so on
@@ -13,9 +14,9 @@ def read_contamination_combinations(contamination_path: str, def_enzymes_path: s
         def_enzymes_path (str): the path to the enzymes translation.
     """
 
+
     # Store sequence-dependent cleaning times for FAM/MF
     df = pd.read_csv(contamination_path, index_col=0, delimiter=";")
-
     # Get the translation
     translation_df = pd.read_csv(def_enzymes_path, header=None,
                                  names=['id', 'number', 'name'])
@@ -26,13 +27,18 @@ def read_contamination_combinations(contamination_path: str, def_enzymes_path: s
     # Get all pairs where the value is 1
     pairs = [(row, col) for row in df.index for col in df.columns if df.loc[row, col] == 1]
 
+
+    # Create all possible combinations based on keys
+    keys = translation_table["key"].tolist()
+    translation_dict = translation_table.set_index('key').to_dict(orient='index')
+    two_element_combinations = list(itertools.combinations(keys, 2))
+
     # Translate name pairs to number pairs
-    number_pairs = [(name_to_number[row], name_to_number[col]) for row, col in pairs]
-    assert len(pairs) == 47
+    number_pairs = [(int(name_to_number[row]), int(name_to_number[col])) for row, col in pairs]
+    final_pairs = [pair for pair in two_element_combinations if (translation_dict[pair[0]]['SKU EoF'],
+                                                                 translation_dict[pair[1]]['SKU EoF']) in number_pairs]
 
-    # TODO: translate number pairs to product ids in factory
-
-    return number_pairs
+    return final_pairs
 
 
 if __name__ == '__main__':
