@@ -14,9 +14,9 @@ def read_contamination_combinations(contamination_path: str, def_enzymes_path: s
         def_enzymes_path (str): the path to the enzymes translation.
     """
 
-
     # Store sequence-dependent cleaning times for FAM/MF
     df = pd.read_csv(contamination_path, index_col=0, delimiter=";")
+
     # Get the translation
     translation_df = pd.read_csv(def_enzymes_path, header=None,
                                  names=['id', 'number', 'name'])
@@ -26,7 +26,6 @@ def read_contamination_combinations(contamination_path: str, def_enzymes_path: s
 
     # Get all pairs where the value is 1
     pairs = [(row, col) for row in df.index for col in df.columns if df.loc[row, col] == 1]
-
 
     # Create all possible combinations based on keys
     keys = translation_table["key"].tolist()

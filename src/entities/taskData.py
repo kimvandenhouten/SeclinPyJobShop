@@ -10,20 +10,18 @@ class TaskData:
        resource_modes (list[str|list[str]]) The list of resource modes that are possible for executing this task.
        fixed_duration (bool): Whether this task has a fixed duration.
     """
-    def __init__(self, id: int, name: str, duration: int, resource_modes: list[str | list[str]],
+    def __init__(self, id: int, name: str, modes: list[tuple],
                  fixed_duration: bool = True):
         self.id = id
         self.name = name
-        self.duration = duration
-        self.resource_modes = resource_modes
+        self.modes = modes
         self.fixed_duration = fixed_duration
 
     def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
-            "duration": self.duration,
-            "resource_modes": self.resource_modes,
+            "modes": self.modes,
             "fixed_duration": self.fixed_duration
         }
 
@@ -32,6 +30,5 @@ class TaskData:
         return cls(
             id=data["id"],
             name=data["name"],
-            duration=data["duration"],
-            resource_modes=data["resource_modes"],
+            modes=data["modes"],
             fixed_duration=data["fixed_duration"])

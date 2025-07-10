@@ -45,13 +45,13 @@ class CPModel:
         for i, name in enumerate(self.factory.resource_names):
             if self.factory.capacity[i] == 1:
                 machine_name = f'{name}'
-                machine = self.model.add_machine(name=name)
+                machine = self.model.add_machine(name=machine_name)
                 self.machines_dict[machine_name] = machine
                 self.machines.append(machine)
             else:
                 for j in range(self.factory.capacity[i]):
                     machine_name = f'{name}_{j+1}'
-                    machine = self.model.add_machine(name=name)
+                    machine = self.model.add_machine(name=machine_name)
                     self.machines_dict[machine_name] = machine
                     self.machines.append(machine)
 
@@ -80,20 +80,19 @@ class CPModel:
             # Add modes
             for task_data in job_data.tasks:
                 task = tasks_dict[task_data.name]
-                modes = task_data.resource_modes
-                print(f'We now add task_data {task_data.name} with modes {task_data.resource_modes}')
-                duration = round(task_data.duration)
+                modes = task_data.modes
+                print(f'We now add task_data {task_data.name} with modes {task_data.modes}')
 
-                for machine_mode in modes:
-                    machine_mode = [self.machines_dict[machine] for machine in machine_mode] if isinstance(machine_mode, list) \
-                        else self.machines_dict[machine_mode]
-                    self.model.add_mode(task, machine_mode, duration)
+                for mode in modes:
+                    machine_mode = [self.machines_dict[machine] for machine in mode[1]] if isinstance(mode[1], list) \
+                        else self.machines_dict[mode[1]]
+                    self.model.add_mode(task, machine_mode, int(mode[0]))
 
             # Add product constraints
             for temp_relation in job_data.temporal_relations:
                 task1 = tasks_dict[temp_relation.task1]
                 task2 = tasks_dict[temp_relation.task2]
-                delay = temp_relation.delay if temp_relation.delay is not None else 0
+                delay = int(temp_relation.delay) if temp_relation.delay is not None else 0
                 if temp_relation.type == ConstraintType.StartToStart:
                     self.model.add_start_before_start(task1, task2, delay)
                 elif temp_relation.type == ConstraintType.StartToFinish:

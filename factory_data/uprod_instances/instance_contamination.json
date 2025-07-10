@@ -1,9 +1,9 @@
 {
     "product_ids": [
-        55, 12, 39, 40, 55
+        55
     ],
     "due_dates": [
-        70, 70, 70, 70, 70
+        63
     ],
     "objective_weights": {
         "weight_makespan": 1,
@@ -45,11 +45,11 @@
             11
         ],
         "constants": {
-            "max_wait_harv": 1,
-            "max_wait_fam": 1,
-            "max_wait_uf": 1,
-            "max_wait_stab": 1,
-            "fam_cleaning_contamination": 3
+            "max_wait_harv": 5,
+            "max_wait_fam": 5,
+            "max_wait_uf": 5,
+            "max_wait_stab": 5,
+            "cleaning_time_contamination": 12
         },
         "products": [
             {
@@ -58,7 +58,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 148.0,
+                        "duration": 153.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -76,7 +76,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -126,7 +126,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -525,7 +525,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 87.0,
+                        "duration": 95.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -543,7 +543,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             "V100"
                         ],
@@ -590,7 +590,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -1108,7 +1108,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 87.0,
+                        "duration": 95.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -1126,7 +1126,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             "V140"
                         ],
@@ -1173,7 +1173,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -2985,7 +2985,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 137.0,
+                        "duration": 147.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -3003,7 +3003,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 17,
+                        "duration": 7,
                         "resource_modes": [
                             "V100"
                         ],
@@ -3050,7 +3050,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 17,
+                        "duration": 7,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -3449,7 +3449,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 130.0,
+                        "duration": 140.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -3467,7 +3467,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 17,
+                        "duration": 7,
                         "resource_modes": [
                             "V218"
                         ],
@@ -3514,7 +3514,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 17,
+                        "duration": 7,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -4235,7 +4235,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 137.0,
+                        "duration": 147.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -4253,7 +4253,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 17,
+                        "duration": 7,
                         "resource_modes": [
                             "V100"
                         ],
@@ -4300,7 +4300,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 17,
+                        "duration": 7,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -4699,7 +4699,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 130.0,
+                        "duration": 140.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -4717,7 +4717,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 17,
+                        "duration": 7,
                         "resource_modes": [
                             "V218"
                         ],
@@ -4764,7 +4764,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 17,
+                        "duration": 7,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -6414,7 +6414,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 130.0,
+                        "duration": 138.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -6432,7 +6432,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -6482,7 +6482,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -6762,7 +6762,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 127.0,
+                        "duration": 135.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -6780,7 +6780,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -6830,7 +6830,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -7235,7 +7235,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 127.0,
+                        "duration": 135.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -7253,7 +7253,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -7303,7 +7303,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -9588,7 +9588,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 130.0,
+                        "duration": 138.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -9606,7 +9606,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -9656,7 +9656,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -9936,7 +9936,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 127.0,
+                        "duration": 135.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -9954,7 +9954,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -10004,7 +10004,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -10409,7 +10409,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 127.0,
+                        "duration": 135.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -10427,7 +10427,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -10477,7 +10477,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -12170,7 +12170,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 100.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -12188,7 +12188,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -12301,7 +12301,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -13053,7 +13053,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 100.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -13071,7 +13071,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -13185,7 +13185,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -14483,7 +14483,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 100.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -14501,7 +14501,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -14614,7 +14614,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -15366,7 +15366,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 100.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -15384,7 +15384,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -15498,7 +15498,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -16796,7 +16796,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 65.0,
+                        "duration": 85.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -16814,7 +16814,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 20,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -16867,7 +16867,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 20,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -17842,7 +17842,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 90.0,
+                        "duration": 100.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -17860,7 +17860,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 34,
+                        "duration": 24,
                         "resource_modes": [
                             "V100"
                         ],
@@ -17910,7 +17910,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 34,
+                        "duration": 24,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -18309,7 +18309,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 95.0,
+                        "duration": 105.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -18327,7 +18327,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 34,
+                        "duration": 24,
                         "resource_modes": [
                             "V140"
                         ],
@@ -18374,7 +18374,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 34,
+                        "duration": 24,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -18898,7 +18898,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 0.0,
+                        "duration": 10.0,
                         "resource_modes": [
                             "V42"
                         ],
@@ -18916,7 +18916,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V42"
                         ],
@@ -18963,7 +18963,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -19362,7 +19362,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 0.0,
+                        "duration": 10.0,
                         "resource_modes": [
                             "V42"
                         ],
@@ -19380,7 +19380,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V42"
                         ],
@@ -19427,7 +19427,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -20522,7 +20522,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 48.0,
+                        "duration": 64.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -20540,7 +20540,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 40,
+                        "duration": 24,
                         "resource_modes": [
                             "V100"
                         ],
@@ -20590,7 +20590,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 40,
+                        "duration": 24,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -22280,7 +22280,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 87.0,
+                        "duration": 95.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -22298,7 +22298,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             "V100"
                         ],
@@ -22345,7 +22345,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -22863,7 +22863,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 87.0,
+                        "duration": 95.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -22881,7 +22881,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             "V140"
                         ],
@@ -22928,7 +22928,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -23452,7 +23452,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 110.0,
+                        "duration": 120.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -23470,7 +23470,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -23520,7 +23520,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -23800,7 +23800,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 110.0,
+                        "duration": 120.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -23818,7 +23818,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -23868,7 +23868,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -24273,7 +24273,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 110.0,
+                        "duration": 142.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -24291,7 +24291,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -24341,7 +24341,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -24619,7 +24619,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 110.0,
+                        "duration": 142.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -24637,7 +24637,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -24687,7 +24687,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -25088,7 +25088,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 110.0,
+                        "duration": 142.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -25106,7 +25106,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -25156,7 +25156,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -25434,7 +25434,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 110.0,
+                        "duration": 142.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -25452,7 +25452,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -25502,7 +25502,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -25903,7 +25903,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 162.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -25921,7 +25921,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             "V100"
                         ],
@@ -25968,7 +25968,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -26248,7 +26248,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 162.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -26266,7 +26266,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             "V200"
                         ],
@@ -26313,7 +26313,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -26796,7 +26796,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 162.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -26814,7 +26814,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             "V218"
                         ],
@@ -26861,7 +26861,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -28040,7 +28040,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 104.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -28058,7 +28058,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -28108,7 +28108,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -28620,7 +28620,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 104.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -28638,7 +28638,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -28751,7 +28751,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -30049,7 +30049,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 104.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -30067,7 +30067,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -30117,7 +30117,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -30629,7 +30629,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 104.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -30647,7 +30647,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -30760,7 +30760,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 8,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -33468,7 +33468,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 75.0,
+                        "duration": 82.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -33486,7 +33486,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 7,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -33536,7 +33536,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 7,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -33931,7 +33931,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 72.0,
+                        "duration": 79.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -33949,7 +33949,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 7,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -33996,7 +33996,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 7,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -36383,7 +36383,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 64.0,
+                        "duration": 94.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -36401,7 +36401,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 40,
+                        "duration": 10,
                         "resource_modes": [
                             "V100"
                         ],
@@ -36448,7 +36448,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 40,
+                        "duration": 10,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -36847,7 +36847,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 64.0,
+                        "duration": 94.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -36865,7 +36865,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 40,
+                        "duration": 10,
                         "resource_modes": [
                             "V100"
                         ],
@@ -36912,7 +36912,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 40,
+                        "duration": 10,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -37311,7 +37311,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 90.0,
+                        "duration": 98.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -37329,7 +37329,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             "V100"
                         ],
@@ -37382,7 +37382,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -37900,7 +37900,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 100.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -37918,7 +37918,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -38031,7 +38031,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -38793,7 +38793,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 100.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -38811,7 +38811,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -38925,7 +38925,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -40241,7 +40241,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 100.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -40259,7 +40259,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -40372,7 +40372,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -41134,7 +41134,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 100.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -41152,7 +41152,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -41266,7 +41266,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 4,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -42582,7 +42582,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 72.0,
+                        "duration": 79.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -42600,7 +42600,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 7,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -42653,7 +42653,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 7,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -43048,7 +43048,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 118.0,
+                        "duration": 138.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -43066,7 +43066,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 20,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -43113,7 +43113,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 20,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -43391,7 +43391,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 118.0,
+                        "duration": 138.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -43409,7 +43409,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 20,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -43522,7 +43522,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 20,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -43800,7 +43800,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 120.0,
+                        "duration": 135.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -43818,7 +43818,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -43868,7 +43868,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -44148,7 +44148,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 105.0,
+                        "duration": 115.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -44166,7 +44166,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -44216,7 +44216,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -44494,7 +44494,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 105.0,
+                        "duration": 115.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -44512,7 +44512,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -44559,7 +44559,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -45038,7 +45038,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 150.0,
+                        "duration": 160.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -45056,7 +45056,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -45106,7 +45106,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -45511,7 +45511,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 150.0,
+                        "duration": 160.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -45529,7 +45529,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -45579,7 +45579,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -46062,7 +46062,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 154.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -46080,7 +46080,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -46127,7 +46127,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -46809,7 +46809,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 149.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -46827,7 +46827,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -46877,7 +46877,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -47282,7 +47282,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 70.0,
+                        "duration": 82.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -47300,7 +47300,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 12,
+                        "duration": 0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -47347,7 +47347,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 12,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -47627,7 +47627,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 70.0,
+                        "duration": 82.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -47645,7 +47645,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 12,
+                        "duration": 0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -47692,7 +47692,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 12,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -47972,7 +47972,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 76.0,
+                        "duration": 86.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -47990,7 +47990,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -48040,7 +48040,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -48320,7 +48320,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 92.0,
+                        "duration": 97.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -48338,7 +48338,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 13,
+                        "duration": 8,
                         "resource_modes": [
                             "V200"
                         ],
@@ -48451,7 +48451,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 13,
+                        "duration": 8,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -49057,7 +49057,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 92.0,
+                        "duration": 97.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -49075,7 +49075,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 13,
+                        "duration": 8,
                         "resource_modes": [
                             "V218"
                         ],
@@ -49188,7 +49188,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 13,
+                        "duration": 8,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -49794,7 +49794,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 110.0,
+                        "duration": 123.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -49812,7 +49812,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 13,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -49859,7 +49859,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 13,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -50342,7 +50342,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 110.0,
+                        "duration": 123.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -50360,7 +50360,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 13,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -50407,7 +50407,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 13,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -50890,7 +50890,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 65.0,
+                        "duration": 80.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -50908,7 +50908,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -50958,7 +50958,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -51236,7 +51236,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 65.0,
+                        "duration": 80.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -51254,7 +51254,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -51301,7 +51301,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -51702,7 +51702,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 120.0,
+                        "duration": 130.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -51720,7 +51720,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 30,
+                        "duration": 20,
                         "resource_modes": [
                             "V100"
                         ],
@@ -51770,7 +51770,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 30,
+                        "duration": 20,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -52050,7 +52050,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 128.0,
+                        "duration": 138.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -52068,7 +52068,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 30,
+                        "duration": 20,
                         "resource_modes": [
                             "V200"
                         ],
@@ -52115,7 +52115,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 30,
+                        "duration": 20,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -52598,7 +52598,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 128.0,
+                        "duration": 138.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -52616,7 +52616,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 30,
+                        "duration": 20,
                         "resource_modes": [
                             "V218"
                         ],
@@ -52663,7 +52663,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 30,
+                        "duration": 20,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -53146,7 +53146,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 116.0,
+                        "duration": 121.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -53164,7 +53164,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             "V140"
                         ],
@@ -53211,7 +53211,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -53575,7 +53575,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 100.0,
+                        "duration": 105.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -53593,7 +53593,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             "V200"
                         ],
@@ -53640,7 +53640,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -54193,7 +54193,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 100.0,
+                        "duration": 105.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -54211,7 +54211,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             "V218"
                         ],
@@ -54258,7 +54258,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -56907,7 +56907,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 104.0,
+                        "duration": 109.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -56925,7 +56925,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -56972,7 +56972,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -57679,7 +57679,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 104.0,
+                        "duration": 109.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -57697,7 +57697,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -57744,7 +57744,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -58451,7 +58451,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 116.0,
+                        "duration": 121.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -58469,7 +58469,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             "V140"
                         ],
@@ -58516,7 +58516,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -58880,7 +58880,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 100.0,
+                        "duration": 105.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -58898,7 +58898,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             "V200"
                         ],
@@ -58945,7 +58945,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -59498,7 +59498,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 100.0,
+                        "duration": 105.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -59516,7 +59516,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             "V218"
                         ],
@@ -59563,7 +59563,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 10,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -60116,7 +60116,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 65.0,
+                        "duration": 80.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -60134,7 +60134,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -60184,7 +60184,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -60464,7 +60464,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 65.0,
+                        "duration": 80.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -60482,7 +60482,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -60529,7 +60529,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -60934,7 +60934,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 92.0,
+                        "duration": 97.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -60952,7 +60952,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 13,
+                        "duration": 8,
                         "resource_modes": [
                             "V200"
                         ],
@@ -61065,7 +61065,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 13,
+                        "duration": 8,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -61665,7 +61665,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 92.0,
+                        "duration": 97.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -61683,7 +61683,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 13,
+                        "duration": 8,
                         "resource_modes": [
                             "V218"
                         ],
@@ -61796,7 +61796,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 13,
+                        "duration": 8,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -62396,7 +62396,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 150.0,
+                        "duration": 160.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -62414,7 +62414,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -62464,7 +62464,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -62869,7 +62869,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 150.0,
+                        "duration": 160.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -62887,7 +62887,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -62937,7 +62937,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -63420,7 +63420,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 154.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -63438,7 +63438,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -63485,7 +63485,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -64167,7 +64167,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 168.0,
+                        "duration": 178.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -64185,7 +64185,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -64232,7 +64232,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -64637,7 +64637,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 168.0,
+                        "duration": 178.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -64655,7 +64655,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -64744,7 +64744,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -65588,7 +65588,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 168.0,
+                        "duration": 178.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -65606,7 +65606,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -65653,7 +65653,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -66058,7 +66058,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 168.0,
+                        "duration": 178.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -66076,7 +66076,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -66165,7 +66165,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -67009,7 +67009,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 133.0,
+                        "duration": 138.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -67027,7 +67027,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 19,
+                        "duration": 14,
                         "resource_modes": [
                             "V100"
                         ],
@@ -67077,7 +67077,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 19,
+                        "duration": 14,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -67500,7 +67500,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 133.0,
+                        "duration": 138.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -67518,7 +67518,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 19,
+                        "duration": 14,
                         "resource_modes": [
                             "V140"
                         ],
@@ -67565,7 +67565,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 19,
+                        "duration": 14,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -68048,7 +68048,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 133.0,
+                        "duration": 138.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -68066,7 +68066,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 19,
+                        "duration": 14,
                         "resource_modes": [
                             "V200"
                         ],
@@ -68113,7 +68113,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 19,
+                        "duration": 14,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -68785,7 +68785,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 133.0,
+                        "duration": 138.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -68803,7 +68803,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 19,
+                        "duration": 14,
                         "resource_modes": [
                             "V218"
                         ],
@@ -68850,7 +68850,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 19,
+                        "duration": 14,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -69522,7 +69522,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 162.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -69540,7 +69540,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             "V100"
                         ],
@@ -69587,7 +69587,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -69867,7 +69867,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 162.0,
                         "resource_modes": [
                             "V200"
                         ],
@@ -69885,7 +69885,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             "V200"
                         ],
@@ -69932,7 +69932,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -70415,7 +70415,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 162.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -70433,7 +70433,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             "V218"
                         ],
@@ -70480,7 +70480,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 14,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -70963,7 +70963,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 76.0,
+                        "duration": 86.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -70981,7 +70981,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -71031,7 +71031,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -71659,7 +71659,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 105.0,
+                        "duration": 115.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -71677,7 +71677,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -71727,7 +71727,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -72007,7 +72007,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 105.0,
+                        "duration": 115.0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -72025,7 +72025,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V218"
                         ],
@@ -72072,7 +72072,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1",
@@ -72555,7 +72555,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 149.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -72573,7 +72573,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -72620,7 +72620,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -73019,7 +73019,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 144.0,
+                        "duration": 149.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -73037,7 +73037,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -73084,7 +73084,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 5,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -73483,7 +73483,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 148.0,
+                        "duration": 164.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -73501,7 +73501,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 23,
+                        "duration": 7,
                         "resource_modes": [
                             "V100"
                         ],
@@ -73548,7 +73548,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 23,
+                        "duration": 7,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -73947,7 +73947,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 148.0,
+                        "duration": 164.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -73965,7 +73965,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 23,
+                        "duration": 7,
                         "resource_modes": [
                             "V100"
                         ],
@@ -74012,7 +74012,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 23,
+                        "duration": 7,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -76315,7 +76315,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 70.0,
+                        "duration": 80.0,
                         "resource_modes": [
                             "V42"
                         ],
@@ -76333,7 +76333,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V42"
                         ],
@@ -76383,7 +76383,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -76663,7 +76663,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 70.0,
+                        "duration": 80.0,
                         "resource_modes": [
                             "V42"
                         ],
@@ -76681,7 +76681,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             "V42"
                         ],
@@ -76731,7 +76731,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 10,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -77011,7 +77011,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 120.0,
+                        "duration": 135.0,
                         "resource_modes": [
                             "V42"
                         ],
@@ -77029,7 +77029,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             "V42"
                         ],
@@ -77079,7 +77079,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 15,
+                        "duration": 0,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -77359,7 +77359,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 114.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -77377,7 +77377,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 38,
+                        "duration": 20,
                         "resource_modes": [
                             "V100"
                         ],
@@ -77427,7 +77427,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 38,
+                        "duration": 20,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -77826,7 +77826,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 96.0,
+                        "duration": 114.0,
                         "resource_modes": [
                             "V100"
                         ],
@@ -77844,7 +77844,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 38,
+                        "duration": 20,
                         "resource_modes": [
                             "V100"
                         ],
@@ -77894,7 +77894,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 38,
+                        "duration": 20,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -78293,7 +78293,7 @@
                     {
                         "id": 0,
                         "name": "fermentation",
-                        "duration": 87.0,
+                        "duration": 95.0,
                         "resource_modes": [
                             "V140"
                         ],
@@ -78311,7 +78311,7 @@
                     {
                         "id": 2,
                         "name": "fermenter_during_harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             "V140"
                         ],
@@ -78358,7 +78358,7 @@
                     {
                         "id": 5,
                         "name": "harvesting",
-                        "duration": 32,
+                        "duration": 24,
                         "resource_modes": [
                             [
                                 "V01_1"
@@ -79343,7 +79343,9 @@
             [
                 61,
                 127
-            ]
+            ],
+            [55,
+            55]
         ]
     }
 }
