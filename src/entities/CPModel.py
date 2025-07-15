@@ -44,15 +44,13 @@ class CPModel:
 
         for i, name in enumerate(self.factory.resource_names):
             if self.factory.capacity[i] == 1:
-                machine_name = f'{name}'
-                machine = self.model.add_machine(name=machine_name)
-                self.machines_dict[machine_name] = machine
+                machine = self.model.add_machine(name=name)
+                self.machines_dict[name] = machine
                 self.machines.append(machine)
             else:
                 for j in range(self.factory.capacity[i]):
-                    machine_name = f'{name}_{j+1}'
-                    machine = self.model.add_machine(name=machine_name)
-                    self.machines_dict[machine_name] = machine
+                    machine = self.model.add_machine(name=name)
+                    self.machines_dict[name] = machine
                     self.machines.append(machine)
 
     def add_jobs(self):
@@ -61,7 +59,8 @@ class CPModel:
         """
 
         # TODO: base the instance on the job keys
-        self.jobs = [self.model.add_job(due_date=self.instance.due_dates[i], name=str(self.instance.product_ids[i])) for i in range(self.nr_products)]
+        self.jobs = [self.model.add_job(due_date=self.instance.due_dates[i], name=str(int(self.instance.product_ids[i])))
+                     for i in range(self.nr_products)]
 
         for j, job in enumerate(self.jobs):
             print(f'We start with job {job.name}')
@@ -127,13 +126,13 @@ class CPModel:
                         for frac_2 in range(nr_fracs_job_2):
                             task_j = self.job_tasks[j][f"FAM/MF_frac_{frac_1}"]
                             task_k = self.job_tasks[k][f"FAM/MF_frac_{frac_2}"]
-                            for machine_name in ["FAM_1", "FAM_2", "FAM_3", 'MF']:
+                            for machine_name in ["FAM1", "FAM2", "FAM3", 'MF1/2']:
                                 machine = self.machines_dict[machine_name]
                                 self.model.add_setup_time(machine, task_j, task_k, fixed_set_up)
                                 print(F'WE ADDED A SETUP TIME for {job_1_data.key}, {job_2_data.key} on {machine_name}')
                             task_l = self.job_tasks[j][f"UF_frac_{frac_1}"]
                             task_m = self.job_tasks[k][f"UF_frac_{frac_2}"]
-                            for machine_name in ["UF_1", "UF_2", "UF_3", 'UF_4']:
+                            for machine_name in ["UF 8_9", "UF 11_12", "UF 14_15", 'UF 7']:
                                 machine = self.machines_dict[machine_name]
                                 self.model.add_setup_time(machine, task_l, task_m, fixed_set_up)
                                 print(F'WE ADDED A SETUP TIME for {job_1_data.key}, {job_2_data.key} on {machine_name}')

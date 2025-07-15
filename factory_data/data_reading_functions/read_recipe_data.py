@@ -14,6 +14,20 @@ def get_lag(row):
         return False
 
 
+def get_lag_fam(row):
+    try:
+        if (np.isnan(row['min_number_fractions_start_FAM']) or np.isinf(row['min_number_fractions_start_FAM']) or
+                row['min_number_fractions_start_FAM'] == 0):
+            return False
+        # Take the minimum of the number of fractions existing and the min number needed
+        number_fractions = np.minimum(row['min_number_fractions_start_FAM'], row["Fractions (#)"])
+        col_name = f"t{int(number_fractions)} (hrs)"
+        return row[col_name] if col_name in row else False
+    except:
+        print('Return Except')
+        return False
+
+
 def create_recipe_dict(data):
     """
     Preprocesses the fermentation and downstream processing recipes which is needed to create
@@ -38,14 +52,27 @@ def create_recipe_dict(data):
     ferm_recipes["fermentation_time"] = ferm_recipes["Fermentation__process (hrs)"]
 
     # Preprocess columns of downstream processing recipes
+    dsp_recipes.rename(columns={'SKU Interm1': 'SKU Interm 1'}, inplace=True)
+    print(dsp_recipes.columns)
     dsp_recipes['MF'] = dsp_recipes['Name'].str.contains('MF', na=False).astype(int)
     dsp_recipes['Stab'] = dsp_recipes['Stab__In V300'].str.contains('Yes', na=False).astype(int)
 
     dsp_recipes["UF_fractions"] = dsp_recipes['UF__UF fractions (#)']
+
+    # TODO: this depends on whether FAM or MF is used (so mode-dependent)
     dsp_recipes["FAM/MF_time"] = ((dsp_recipes['Harvest tanks__End weight (kg)'] / dsp_recipes['UF__UF fractions (#)']) /
-                                  dsp_recipes['FAM or MF__Process (kg/hr)'])
+                                  (dsp_recipes['FAM or MF__Process (kg/hr/sqm)'] * 100))
+
+    print(dsp_recipes["FAM/MF_time"].describe())
+
+    MIN_WEIGHT_F_AND_L = 35000
+    dsp_recipes["UF_lag"] = MIN_WEIGHT_F_AND_L / (dsp_recipes['FAM or MF__Process (kg/hr/sqm)'] * 100)
+
+    # TODO: this depends on the UF selection (so mode-dependent)
     dsp_recipes["UF_time"] = ((dsp_recipes['FAM or MF__Weight (kg at F+L)'] / dsp_recipes['UF__UF fractions (#)']) /
-                              dsp_recipes["UF__Process (kg/hr)"])
+                              (dsp_recipes["UF__Process (kg/hr/sqm)"] * 600))
+
+    print(dsp_recipes["UF_time"].describe())
 
     dsp_recipes["stab_time"] = dsp_recipes['Stab__Process (hrs)']
 
@@ -58,15 +85,25 @@ def create_recipe_dict(data):
 
     # Obtain the minimum minimum weight of the harvest tanks
     min_min_weight = harvest_tanks["Minimum weight (kg)"].min()
+
+    # Obtain the minimum capacity of the harvest tanks
+    min_capacity = harvest_tanks["Capacity (kg)"].min()
+
+    # Do the computations for when the fractions should be transferred to a V01 tank
     merged_df["min_number_fractions"] = np.floor(min_min_weight / merged_df["Fraction weight (kg)"])
     merged_df['lag_receival_fraction'] = merged_df.apply(get_lag, axis=1)
     print(merged_df["lag_receival_fraction"].tolist())
 
+    # Do the computations for when the first UF fraction can start
+    merged_df['min_number_fractions_start_FAM'] = np.floor(min_capacity / merged_df["Fraction weight (kg)"])
+    merged_df['lag_start_fam'] = merged_df.apply(get_lag_fam, axis=1)
+
     # Drop duplicate columns created by the merge
-    merged_df = merged_df[['SKU Interm1', 'SKU EoF', 'Enzyme', 'Fermenter', 'Batch weight (kg)', 'Total fractions (kg)',
+    merged_df = merged_df[['SKU Interm 1', 'SKU EoF', 'Enzyme', 'Fermenter', 'Batch weight (kg)', 'Total fractions (kg)',
                            'Fractions (#)', 'fermentation_prep', 'fermentation_time', 'fermentation_post',
                            'harvesting_time', 'FAM/MF_time', 'UF_time', 'stab_time', "UF_fractions",
-                           'UF__Weight ccUF (kg)', 'MF', 'Stab', "lag_receival_fraction", "Etanks required (#)"]]
+                           'UF__Weight ccUF (kg)', 'MF', 'Stab', "lag_receival_fraction", "Etanks required (#)", 'min_number_fractions_start_FAM',
+                           'lag_start_fam', "UF_lag"]]
 
     # Drop NAS
     merged_df = merged_df.dropna()
@@ -75,18 +112,20 @@ def create_recipe_dict(data):
     # Or, if you want it to start from 1
     merged_df['key'] = range(0, len(merged_df))
 
-    translation_table = merged_df[['key', 'Fermenter', 'SKU EoF', 'SKU Interm1', 'MF', 'Stab']]
+    translation_table = merged_df[['key', 'Fermenter', 'SKU EoF', 'SKU Interm 1', 'MF', 'Stab']]
 
     return merged_df, translation_table
 
 
 def create_product_from_recipe(key: int,
-                                     recipe: dict,
-                                     translation: dict,
-                                     harvesting_tanks: list[int],
-                                     v300_tanks: list[int],
-                                     UF_tanks: list[int],
-                                     flexible_fermenters: bool = True):
+                               recipe: dict,
+                               translation: dict,
+                               harvesting_tanks: list[str],
+                               etanks: list[str],
+                               fandltanks: list[str],
+                               UF_tanks: list[str],
+                               v300_tanks: list[str],
+                               flexible_fermenters: bool = True):
     """
     Creates a ProductData object from a preprocessed recipe data given a product ID and
 
@@ -108,11 +147,10 @@ def create_product_from_recipe(key: int,
     # TODO: read this from an input table
     if recipe["Fractions (#)"] > 0:
         print(f'Recipe with key {key} has {recipe["Fractions (#)"]} fractions')
-
-        product = create_product_with_fractions(key, recipe, translation,harvesting_tanks, v300_tanks, UF_tanks, flexible_fermenters)
+        product = create_product_with_fractions(key, recipe, translation, harvesting_tanks, etanks, fandltanks, UF_tanks, v300_tanks, flexible_fermenters)
 
     else:
-        product = create_product_batch_fermentation(key, recipe, translation,harvesting_tanks, v300_tanks, UF_tanks, flexible_fermenters)
+        product = create_product_batch_fermentation(key, recipe, translation, harvesting_tanks, etanks, fandltanks, UF_tanks, v300_tanks, flexible_fermenters)
 
     return product
 
@@ -120,9 +158,11 @@ def create_product_from_recipe(key: int,
 def create_product_with_fractions(key: int,
                                recipe: dict,
                                translation: dict,
-                               harvesting_tanks: list[int],
-                               v300_tanks: list[int],
-                               UF_tanks: list[int],
+                               harvesting_tanks: list[str],
+                               etanks: list[str],
+                               fandltanks: list[str],
+                               UF_tanks: list[str],
+                               v300_tanks: list[str],
                                flexible_fermenters: bool = True):
     """
     Creates a ProductData object from a preprocessed recipe data given a product ID and
@@ -153,7 +193,7 @@ def create_product_with_fractions(key: int,
 
     # These constants are needed to model additional constraints
     constants = {"UF_fractions": recipe["UF_fractions"], "FAM/MF_duration": round(recipe["FAM/MF_time"]),
-                 "UF_duration": round(recipe["UF_time"]), "transfer_time_harvesting": 1}
+                 "UF_duration": round(recipe["UF_time"]), "transfer_time_harvesting": 0}
 
     # The uprod production consist of the following tasks that must be scheduled
     task_names = ["fermentation_prep",
@@ -164,7 +204,8 @@ def create_product_with_fractions(key: int,
                   "harvesting",
                   "helper_harvesting",
                   "STAB",
-                  "Etanks"
+                  "Etanks",
+                  "operator_during_fermentation"
                   ]
 
     # Get the processing times from the recipe
@@ -177,24 +218,8 @@ def create_product_with_fractions(key: int,
                          "STAB": recipe["stab_time"]
                         }
 
-    # Get the resource modes for the harvesting tasks
-    harvesting_translation = {1: "V01_1", 2: "V01_2", 3: "V01_3", 4: "V01_4", 5: "V01_5", 6: "V01_6"}
-    harvesting_modes_broth = []
-
-    for j in harvesting_tanks["broth_receival"]:
-        harvesting_modes_broth.append([harvesting_translation[i] for i in j])
-    harvesting_modes_fractions = []
-    for j in harvesting_tanks["fractions_receival"]:
-        harvesting_modes_fractions.append([harvesting_translation[i] for i in j])
-
-    # Get the resource modes for the V300 tasks
-    v300_translation = {1: "V300_1", 2: "V300_2", 3: "V300_3", 4: "V300_4", 5: "V300_5", 6: "V300_6",
-                        7: "V300_7", 8: "V300_8", 9: "V300_9", 10: "V300_10", 11: "V300_11"
-                        }
-
-    v300_modes = []
-    for j in v300_tanks:
-        v300_modes.append([v300_translation[i] for i in j])
+    harvesting_modes_broth = harvesting_tanks["broth_receival"]
+    harvesting_modes_fractions = harvesting_tanks["fractions_receival"]
 
     # Get the resource modes for the fermentation tasks
     if flexible_fermenters:
@@ -212,9 +237,10 @@ def create_product_with_fractions(key: int,
                     "receival_fractions": harvesting_modes_fractions,
                     "harvesting": harvesting_modes_broth,
                     "helper_harvesting": harvesting_modes_broth,
-                    "STAB": v300_modes,
-                    "F+L": ["F+L_1", "F+L_2", "F+L_3", "F+L_4"],
-                    "Etanks": ["E_1", "E_2", "E_3", "E_4"]
+                    "STAB": v300_tanks,
+                    "F+L": fandltanks,
+                    "Etanks": etanks,
+                     "operator_during_fermentation": ["operator"]
                      }
 
     # Get the task duration from the recipe data
@@ -224,10 +250,11 @@ def create_product_with_fractions(key: int,
                           "harvesting": processing_times["harvesting"] + constants["transfer_time_harvesting"],
                           "receival_fractions": int(0.5 * processing_times["fermentation"]),
                           "helper_fermenter": processing_times["harvesting"] + constants["transfer_time_harvesting"],
-                          "helper_harvesting": int(processing_times["FAM/MF"]/2),
+                          "helper_harvesting": 0,
                           "FAM/MF": processing_times["FAM/MF"],
                           "STAB": processing_times["STAB"],
-                           "Etanks": processing_times["fermentation"]}
+                          "Etanks": processing_times["fermentation"],
+                           "operator_during_fermentation": 11} #TODO: read in from general settings
 
     # Create product
     product = ProductData(key=key, constants=constants, translation=translation)
@@ -248,8 +275,13 @@ def create_product_with_fractions(key: int,
         id += 1
 
     print(f'We insert a lag of {recipe["lag_receival_fraction"]}')
-    start_before_start_constraints = [("fermentation", "receival_fractions", recipe["lag_receival_fraction"])]
-    start_before_end_constraints = [("helper_fermenter", "fermentation", None)]
+    start_before_start_constraints = [("fermentation", "receival_fractions", recipe["lag_receival_fraction"]),
+                                      ("fermentation_prep", "operator_during_fermentation", None),
+                                      ("operator_during_fermentation", "fermentation_prep", None)]
+
+    start_before_end_constraints = [("helper_fermenter", "fermentation", None),
+                                    ("fermentation", "fermentation_prep", None),
+                                    ("fermentation_post", "helper_fermenter", None)]
 
     end_before_start_constraints = [("fermentation_prep", "fermentation", None),
                                     ("fermentation", "harvesting", None),
@@ -268,18 +300,18 @@ def create_product_with_fractions(key: int,
     nr_fracs = constants["UF_fractions"]
 
     if MF:
-        FAM_MF_modes = [(task_durations["FAM/MF"], "MF")]
+        FAM_MF_modes = [(task_durations["FAM/MF"], "MF1/2")]
     else:
-        FAM_MF_modes = [(task_durations["FAM/MF"], "FAM_1"), (task_durations["FAM/MF"], "FAM_2"),
-                        (task_durations["FAM/MF"], "FAM_3"),
-                        (int(task_durations["FAM/MF"] / 2), ["FAM_1", "FAM_2"]),
-                        (int(task_durations["FAM/MF"] / 2), ["FAM_2", "FAM_1"]),
-                        (int(task_durations["FAM/MF"] / 2), ["FAM_2", "FAM_3"])]
+        FAM_MF_modes = [(task_durations["FAM/MF"], "FAM1"), (task_durations["FAM/MF"], "FAM2"),
+                        (task_durations["FAM/MF"], "FAM3"),
+                        (int(task_durations["FAM/MF"] / 2), ["FAM1", "FAM2"]),
+                        (int(task_durations["FAM/MF"] / 2), ["FAM2", "FAM1"]),
+                        (int(task_durations["FAM/MF"] / 2), ["FAM2", "FAM3"])]
 
     # For each UF fraction we make a FAM/MF, FAP1, UF and F+L task that requires multiple machines
-    UF_modes = [(processing_times["UF"], f"UF_{i}") for i in UF_tanks]
+    UF_modes = [(processing_times["UF"], tank) for tank in UF_tanks]
     FAP1_modes = [(processing_times["UF"], f"FAP1_{i}") for i in range(1, 6)]
-    FL_modes = [(processing_times["FAM/MF"], f"F+L_{i}") for i in range(1, 5)]
+    FL_modes = [(processing_times["FAM/MF"], tank) for tank in fandltanks]
 
     for uf_frac in range(nr_fracs):
         # TODO: make consistency in task_durations and processing_times dict
@@ -301,14 +333,14 @@ def create_product_with_fractions(key: int,
         start_before_start_extra = [(f"F+L_frac_{uf_frac}", f"FAM/MF_frac_{uf_frac}", None),
                                     (f"FAM/MF_frac_{uf_frac}", f"F+L_frac_{uf_frac}", None),
                                     (f"FAP1_frac_{uf_frac}", f"UF_frac_{uf_frac}", None),
-                                    (f"UF_frac_{uf_frac}", f"FAP1_frac_{uf_frac}", None)
+                                    (f"UF_frac_{uf_frac}", f"FAP1_frac_{uf_frac}", None),
+                                    ("fermentation", f"FAM/MF_frac_{uf_frac}", recipe["lag_start_fam"]),
+                                    (f"FAM/MF_frac_{uf_frac}", f"UF_frac_{uf_frac}", recipe["UF_lag"])
                                     ]
 
         start_before_end_extra = [(f"UF_frac_{uf_frac}", f"FAM/MF_frac_{uf_frac}", -MAX_WAIT_UF)]
 
-        end_before_start_extra = [("harvesting", f"FAM/MF_frac_{uf_frac}", None),
-                                  (f"FAM/MF_frac_{uf_frac}", f"UF_frac_{uf_frac}", None)
-                                  ]
+        end_before_start_extra = []
 
         end_before_end_extra = [(f"FAP1_frac_{uf_frac}", f"UF_frac_{uf_frac}", None),
                                 (f"UF_frac_{uf_frac}", f"FAP1_frac_{uf_frac}", None),
@@ -324,13 +356,12 @@ def create_product_with_fractions(key: int,
         end_before_end_constraints += end_before_end_extra
 
     # Fermenter tank in use during fermentation
-    start_before_start_constraints += [("helper_harvesting", f"FAM/MF_frac_0", None),
-                                       ("harvesting", "helper_fermenter", None),
+    start_before_start_constraints += [("harvesting", "helper_fermenter", None),
                                        ("helper_fermenter", "harvesting", None),
-                                       ("Etanks", "fermentation", None)]
+                                       ("Etanks", "fermentation", None),
+                                       ("fermentation", "Etanks", None)]
 
-    start_before_end_constraints += [("STAB", f"UF_frac_{uf_frac}", - MAX_WAIT_STAB),
-                                     (f"FAM/MF_frac_0", "harvesting", - MAX_WAIT_FAM_MF)]
+    start_before_end_constraints += [("STAB", f"UF_frac_{uf_frac}", - MAX_WAIT_STAB)]
 
     # V300 after last UF fraction
     end_before_start_constraints += [(f"UF_frac_{uf_frac}", "STAB", None)]
@@ -338,7 +369,6 @@ def create_product_with_fractions(key: int,
     end_before_end_constraints += [(f"FAM/MF_frac_{uf_frac}", "receival_fractions", None),
                                    (f"FAM/MF_frac_{uf_frac}", "helper_harvesting", None),
                                    ("helper_fermenter", "Etanks", None)]
-
 
     # Temporal constraints that only apply to the final one or first one
     # Ordering of the fractions
@@ -368,12 +398,15 @@ def create_product_with_fractions(key: int,
     return product
 
 
+
 def create_product_batch_fermentation(key: int,
                                recipe: dict,
                                translation: dict,
-                               harvesting_tanks: list[int],
-                               v300_tanks: list[int],
-                               UF_tanks: list[int],
+                               harvesting_tanks: list[str],
+                               etanks: list[str],
+                               fandltanks: list[str],
+                               UF_tanks: list[str],
+                               v300_tanks: list[str],
                                flexible_fermenters: bool = True):
     """
     Creates a ProductData object from a preprocessed recipe data given a product ID and
@@ -408,7 +441,8 @@ def create_product_batch_fermentation(key: int,
                   "fermentation_post",
                   "STAB",
                   "harvesting",
-                  "helper_harvesting"
+                  "helper_harvesting",
+                  "operator_during_fermentation"
                   ]
 
     # Get the processing times from the recipe
@@ -418,23 +452,8 @@ def create_product_batch_fermentation(key: int,
                          "harvesting": recipe["harvesting_time"],
                          "FAM/MF": round(recipe["FAM/MF_time"]),
                          "UF": round(recipe["UF_time"]),
-                         "STAB": recipe["stab_time"]}
-
-    # Get the resource modes for the harvesting tasks
-    harvesting_translation = {1: "V01_1", 2: "V01_2", 3: "V01_3", 4: "V01_4", 5: "V01_5", 6: "V01_6"}
-    harvesting_modes = []
-
-    for j in harvesting_tanks['batch_fermentation']:
-        harvesting_modes.append([harvesting_translation[i] for i in j])
-
-    # Get the resource modes for the V300 tasks
-    v300_translation = {1: "V300_1", 2: "V300_2", 3: "V300_3", 4: "V300_4", 5: "V300_5", 6: "V300_6",
-                        7: "V300_7", 8: "V300_8", 9: "V300_9", 10: "V300_10", 11: "V300_11"
-                        }
-
-    v300_modes = []
-    for j in v300_tanks:
-        v300_modes.append([v300_translation[i] for i in j])
+                         "STAB": recipe["stab_time"],
+                          }
 
     # Get the resource modes for the fermentation tasks
     if flexible_fermenters:
@@ -448,10 +467,11 @@ def create_product_batch_fermentation(key: int,
                     "fermentation_post": fermenter_modes,
                     "fermentation": fermenter_modes,
                     "helper_fermenter": fermenter_modes,
-                    "STAB": v300_modes,
-                    "F+L": ["F+L_1", "F+L_2", "F+L_3", "F+L_4"],
-                     "harvesting": harvesting_modes,
-                     "helper_harvesting": harvesting_modes
+                    "STAB": v300_tanks,
+                    "F+L": fandltanks,
+                    "harvesting": harvesting_tanks["batch_fermentation"],
+                    "helper_harvesting": harvesting_tanks["batch_fermentation"],
+                    "operator_during_fermentation": ["operator"]
                      }
 
     # Get the task duration from the recipe data
@@ -463,13 +483,13 @@ def create_product_batch_fermentation(key: int,
                           "FAM/MF": processing_times["FAM/MF"],
                           "helper_harvesting": int(0.5*processing_times["FAM/MF"]),
                           "F+L": processing_times["FAM/MF"],
-                          "STAB": processing_times["STAB"]}
+                          "STAB": processing_times["STAB"],
+                          "operator_during_fermentation": 11} # TODO: read in from general settings
 
     # These constants are needed to model additional constraints
     constants = {"UF_fractions": recipe["UF_fractions"], "FAM/MF_duration": round(recipe["FAM/MF_time"]),
                             "UF_duration": round(recipe["UF_time"])}
 
-    etanks = ["E_1", "E_2", "E_3", "E_4"]
     print(f'for key {key} Etanks required is {recipe["Etanks required (#)"]}')
     if recipe["Etanks required (#)"] > 0:
         modes_etanks = list(combinations(etanks, int(recipe["Etanks required (#)"])))
@@ -497,7 +517,8 @@ def create_product_batch_fermentation(key: int,
         id += 1
 
     # First, handle the constraints for fermentation and harvesting
-    start_before_start_constraints = []
+    start_before_start_constraints = [("fermentation_prep", "operator_during_fermentation", None),
+                                      ("operator_during_fermentation", "fermentation_prep", None)]
 
     start_before_end_constraints = [("fermentation", "fermentation_prep", None),
                                     ("fermentation_post", "helper_fermenter", None),
@@ -518,18 +539,18 @@ def create_product_batch_fermentation(key: int,
     nr_fracs = constants["UF_fractions"]
 
     if MF:
-        FAM_MF_modes = [(task_durations["FAM/MF"], "MF")]
+        FAM_MF_modes = [(task_durations["FAM/MF"], "MF1/2")]
     else:
-        FAM_MF_modes = [(task_durations["FAM/MF"], "FAM_1"), (task_durations["FAM/MF"], "FAM_2"),
-                        (task_durations["FAM/MF"], "FAM_3"),
-                        (int(task_durations["FAM/MF"]/2), ["FAM_1", "FAM_2"]),
-                        (int(task_durations["FAM/MF"]/2), ["FAM_2", "FAM_1"]),
-                        (int(task_durations["FAM/MF"]/2), ["FAM_2", "FAM_3"])]
+        FAM_MF_modes = [(task_durations["FAM/MF"], "FAM1"), (task_durations["FAM/MF"], "FAM2"),
+                        (task_durations["FAM/MF"], "FAM3"),
+                        (int(task_durations["FAM/MF"]/2), ["FAM1", "FAM2"]),
+                        (int(task_durations["FAM/MF"]/2), ["FAM2", "FAM1"]),
+                        (int(task_durations["FAM/MF"]/2), ["FAM2", "FAM3"])]
 
     # For each UF fraction we make a FAM/MF, FAP1, UF and F+L task that requires multiple machines
-    UF_modes = [(processing_times["UF"], f"UF_{i}") for i in UF_tanks]
+    UF_modes = [(processing_times["UF"], tank) for tank in UF_tanks]
     FAP1_modes = [(processing_times["UF"], f"FAP1_{i}") for i in range(1, 6)]
-    FL_modes = [(processing_times["FAM/MF"], f"F+L_{i}") for i in range(1, 5)]
+    FL_modes = [(processing_times["FAM/MF"], tank) for tank in fandltanks]
 
     for uf_frac in range(nr_fracs):
         # TODO: make consistency in task_durations and processing_times dict
@@ -552,12 +573,12 @@ def create_product_batch_fermentation(key: int,
         start_before_start_extra = [(f"F+L_frac_{uf_frac}", f"FAM/MF_frac_{uf_frac}", None),
                                     (f"FAM/MF_frac_{uf_frac}", f"F+L_frac_{uf_frac}", None),
                                     (f"FAP1_frac_{uf_frac}", f"UF_frac_{uf_frac}", None),
-                                    (f"UF_frac_{uf_frac}", f"FAP1_frac_{uf_frac}", None)]
+                                    (f"UF_frac_{uf_frac}", f"FAP1_frac_{uf_frac}", None),
+                                    (f"FAM/MF_frac_{uf_frac}", f"UF_frac_{uf_frac}", recipe["UF_lag"])]
 
         start_before_end_extra = [(f"UF_frac_{uf_frac}", f"FAM/MF_frac_{uf_frac}", -MAX_WAIT_UF)]
 
-        end_before_start_extra = [("harvesting", f"FAM/MF_frac_{uf_frac}", None),
-                                 (f"FAM/MF_frac_{uf_frac}", f"UF_frac_{uf_frac}", None)]
+        end_before_start_extra = [("harvesting", f"FAM/MF_frac_{uf_frac}", None)]
 
         end_before_end_extra = [(f"FAP1_frac_{uf_frac}", f"UF_frac_{uf_frac}", None),
                                 (f"UF_frac_{uf_frac}", f"FAP1_frac_{uf_frac}", None),
@@ -594,7 +615,9 @@ def create_product_batch_fermentation(key: int,
 
     if recipe["Etanks required (#)"] > 0:
         start_before_start_constraints += [("Etanks", "fermentation", None)]
-        end_before_end_constraints += [("fermentation", "Etanks", None)]
+        start_before_start_constraints += [("fermentation", "Etanks", None)]
+        end_before_end_constraints += [("fermentation", "Etanks", None),
+                                       ("Etanks", "fermentation", None)]
 
     # Convert all collected constraints into objects and add to product object
     for (task1, task2, delay) in start_before_start_constraints:

@@ -1,0 +1,5 @@
+ID,Equipment,Type,CIP duration (min),Sterilization duration (min),Filtration area (sqm)
+1,FAM1,FAM machine,,,100
+2,FAM2,FAM machine,,,100
+3,FAM3,FAM machine,,,100
+4,MF1/2,MF machine,,,148
